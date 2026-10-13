@@ -5,11 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/components/session-provider";
 
-type RouteName = "biblioteca" | "salon" | "auth";
+type RouteName = "inicio" | "biblioteca" | "salon" | "acerca" | "auth";
 
 function activeRoute(pathname: string): RouteName | null {
-  if (pathname === "/" || pathname.startsWith("/juegos")) return "biblioteca";
+  if (pathname === "/") return "inicio";
+  if (pathname.startsWith("/juegos")) return "biblioteca";
   if (pathname.startsWith("/salon")) return "salon";
+  if (pathname.startsWith("/acerca")) return "acerca";
   if (pathname.startsWith("/auth")) return "auth";
   return null;
 }
@@ -32,11 +34,17 @@ export function Nav() {
           </div>
         </Link>
         <div className="links">
-          <Link href="/" className={cls("biblioteca")}>
+          <Link href="/" className={cls("inicio")}>
+            Inicio
+          </Link>
+          <Link href="/juegos" className={cls("biblioteca")}>
             Biblioteca
           </Link>
           <Link href="/salon" className={cls("salon")}>
             Salón de la Fama
+          </Link>
+          <Link href="/acerca" className={cls("acerca")}>
+            Acerca de
           </Link>
         </div>
         <div className="spacer"></div>
@@ -70,11 +78,17 @@ export function Nav() {
         <div className="pixel neon-cyan" style={{ fontSize: 11, marginBottom: 16 }}>
           MENÚ
         </div>
-        <Link href="/" className={cls("biblioteca")} onClick={close}>
+        <Link href="/" className={cls("inicio")} onClick={close}>
+          Inicio
+        </Link>
+        <Link href="/juegos" className={cls("biblioteca")} onClick={close}>
           Biblioteca
         </Link>
         <Link href="/salon" className={cls("salon")} onClick={close}>
           Salón de la Fama
+        </Link>
+        <Link href="/acerca" className={cls("acerca")} onClick={close}>
+          Acerca de
         </Link>
         <Link href="/auth" className={cls("auth")} onClick={close}>
           {user ? "Cuenta" : "Iniciar Sesión"}
