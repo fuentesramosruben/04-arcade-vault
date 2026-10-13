@@ -5,12 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/components/session-provider";
 
-type RouteName = "inicio" | "biblioteca" | "salon" | "auth";
+type RouteName = "inicio" | "biblioteca" | "salon" | "acerca" | "auth";
 
 function activeRoute(pathname: string): RouteName | null {
   if (pathname === "/") return "inicio";
   if (pathname.startsWith("/juegos")) return "biblioteca";
   if (pathname.startsWith("/salon")) return "salon";
+  if (pathname.startsWith("/acerca")) return "acerca";
   if (pathname.startsWith("/auth")) return "auth";
   return null;
 }
@@ -41,6 +42,9 @@ export function Nav() {
           </Link>
           <Link href="/salon" className={cls("salon")}>
             Salón de la Fama
+          </Link>
+          <Link href="/acerca" className={cls("acerca")}>
+            Acerca de
           </Link>
         </div>
         <div className="spacer"></div>
@@ -82,6 +86,9 @@ export function Nav() {
         </Link>
         <Link href="/salon" className={cls("salon")} onClick={close}>
           Salón de la Fama
+        </Link>
+        <Link href="/acerca" className={cls("acerca")} onClick={close}>
+          Acerca de
         </Link>
         <Link href="/auth" className={cls("auth")} onClick={close}>
           {user ? "Cuenta" : "Iniciar Sesión"}
