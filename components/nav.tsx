@@ -33,6 +33,9 @@ export function Nav() {
           </div>
         </Link>
         <div className="links">
+          <Link href="/" className={cls("inicio")}>
+            Inicio
+          </Link>
           <Link href="/juegos" className={cls("biblioteca")}>
             Biblioteca
           </Link>
@@ -71,6 +74,9 @@ export function Nav() {
         <div className="pixel neon-cyan" style={{ fontSize: 11, marginBottom: 16 }}>
           MENÚ
         </div>
+        <Link href="/" className={cls("inicio")} onClick={close}>
+          Inicio
+        </Link>
         <Link href="/juegos" className={cls("biblioteca")} onClick={close}>
           Biblioteca
         </Link>
