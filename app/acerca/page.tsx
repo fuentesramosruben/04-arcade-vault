@@ -3,6 +3,7 @@ import {
   HighlightIcon,
   type HighlightKind,
 } from "@/components/about/highlight-icon";
+import { ContactForm } from "@/components/about/contact-form";
 import { Reveal } from "@/components/home/reveal";
 
 export const metadata: Metadata = {
@@ -80,38 +81,7 @@ export default function AcercaPage() {
             </div>
           </div>
 
-          {/* Formulario inerte: el Paso 6 lo sustituye por <ContactForm />. */}
-          <form className="contact-form">
-            <div className="field">
-              <label htmlFor="name">NOMBRE</label>
-              <input id="name" name="name" placeholder="px_kai" />
-            </div>
-            <div className="field">
-              <label htmlFor="email">CORREO ELECTRÓNICO</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="jugador@vault.gg"
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="msg">MENSAJE</label>
-              <textarea
-                id="msg"
-                name="msg"
-                rows={5}
-                placeholder="Cuéntanos qué tienes en mente…"
-              ></textarea>
-            </div>
-            <button
-              className="btn xl press"
-              type="button"
-              style={{ width: "100%" }}
-            >
-              ▶ ENVIAR MENSAJE
-            </button>
-          </form>
+          <ContactForm />
         </div>
       </Reveal>
     </div>
