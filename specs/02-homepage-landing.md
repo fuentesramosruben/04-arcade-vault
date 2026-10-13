@@ -1,6 +1,6 @@
 # SPEC 02 — Homepage (landing) de Arcade Vault
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-13
 > **Objective:** Portar a Next.js la landing de `references/templates/home-about/home.jsx` como nueva página de inicio en `/`, moviendo la biblioteca actual a `/juegos`.
