@@ -304,7 +304,14 @@ export function GamePlayer({ game }: { game: Game }) {
                 )}
               </>
             ) : (
-              <>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
                 <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
                 {hasEngine && (
                   <Link
@@ -315,7 +322,7 @@ export function GamePlayer({ game }: { game: Game }) {
                     VER RANKING
                   </Link>
                 )}
-              </>
+              </div>
             )}
             <div className="actions">
               <button className="btn" onClick={restart}>

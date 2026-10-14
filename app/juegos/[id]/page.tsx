@@ -5,7 +5,67 @@ import { GAMES } from "@/lib/games";
 import { formatCompact } from "@/lib/format";
 import { ENGINES } from "@/lib/games/registry";
 import { seededScores } from "@/lib/scores";
-import { getGameStats } from "@/lib/supabase/queries";
+import {
+  getGameLeaderboard,
+  getGameStats,
+  type LeaderboardRow,
+} from "@/lib/supabase/queries";
+const SIDE_TOP = 10;
+function Rows({ rows }: { rows: LeaderboardRow[] }) {
+  return rows.map((r, i) => (
+    <div
+      key={r.name + r.rank}
+      className={
+        "lb-row" +
+        (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")
+      }
+    >
+      <div className="rk">#{String(r.rank).padStart(2, "0")}</div>
+      <div className="pl">
+        {r.name}
+        <div
+          style={{
+            fontSize: 10,
+            color: "var(--ink-faint)",
+            letterSpacing: "0.1em",
+          }}
+        >
+          {r.date}
+        </div>
+      </div>
+      <div className="sc">{r.score.toLocaleString("es-ES")}</div>
+    </div>
+  ));
+}
+function SideNotice({ children }: { children: string }) {
+  return (
+    <div
+      className="pixel"
+      style={{
+        padding: "24px 8px",
+        textAlign: "center",
+        fontSize: 10,
+        color: "var(--ink-faint)",
+        letterSpacing: "0.12em",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+// Juegos con motor: las mismas marcas que /salon/[id] (Top 10).
+async function RealRows({ gameId }: { gameId: string }) {
+  let rows: LeaderboardRow[];
+  try {
+    rows = (await getGameLeaderboard(gameId)).slice(0, SIDE_TOP);
+  } catch {
+    return <SideNotice>NO SE PUDO CARGAR EL RANKING</SideNotice>;
+  }
+  if (rows.length === 0) {
+    return <SideNotice>SIN PUNTUACIONES TODAVÍA</SideNotice>;
+  }
+  return <Rows rows={rows} />;
+}
 function StatCells({ plays, best }: { plays: string; best: string }) {
   return (
     <>
@@ -49,7 +109,6 @@ export default async function GameDetailPage({
   const { id } = await params;
   const game = GAMES.find((g) => g.id === id);
   if (!game) notFound();
-  const scores = seededScores(id.length * 17 + 3, 10);
   return (
     <div className="av-detail fade-in">
       <div>
@@ -86,11 +145,6 @@ export default async function GameDetailPage({
             <Link href={`/juegos/${game.id}/jugar`} className="btn xl pulse">
               ▶ JUGAR AHORA
             </Link>
-            {game.id in ENGINES && (
-              <Link href={`/salon/${game.id}`} className="btn magenta lg">
-                VER RANKING
-              </Link>
-            )}
             <Link href="/juegos" className="btn ghost lg">
               VOLVER AL VAULT
             </Link>
@@ -100,30 +154,13 @@ export default async function GameDetailPage({
       <aside>
         <div className="leaderboard">
           <h3>MEJORES PUNTUACIONES</h3>
-          {scores.map((r, i) => (
-            <div
-              key={r.name}
-              className={
-                "lb-row" +
-                (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")
-              }
-            >
-              <div className="rk">#{String(r.rank).padStart(2, "0")}</div>
-              <div className="pl">
-                {r.name}
-                <div
-                  style={{
-                    fontSize: 10,
-                    color: "var(--ink-faint)",
-                    letterSpacing: "0.1em",
-                  }}
-                >
-                  {r.date}
-                </div>
-              </div>
-              <div className="sc">{r.score.toLocaleString("es-ES")}</div>
-            </div>
-          ))}
+          {game.id in ENGINES ? (
+            <Suspense fallback={<SideNotice>CARGANDO…</SideNotice>}>
+              <RealRows gameId={game.id} />
+            </Suspense>
+          ) : (
+            <Rows rows={seededScores(id.length * 17 + 3, 10)} />
+          )}
         </div>
       </aside>
     </div>
