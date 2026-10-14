@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GAMES } from "@/lib/games";
 import { formatCompact } from "@/lib/format";
+import { ENGINES } from "@/lib/games/registry";
 import { seededScores } from "@/lib/scores";
 import { getGameStats } from "@/lib/supabase/queries";
 function StatCells({ plays, best }: { plays: string; best: string }) {
@@ -85,6 +86,11 @@ export default async function GameDetailPage({
             <Link href={`/juegos/${game.id}/jugar`} className="btn xl pulse">
               ▶ JUGAR AHORA
             </Link>
+            {game.id in ENGINES && (
+              <Link href={`/salon/${game.id}`} className="btn magenta lg">
+                VER RANKING
+              </Link>
+            )}
             <Link href="/juegos" className="btn ghost lg">
               VOLVER AL VAULT
             </Link>
