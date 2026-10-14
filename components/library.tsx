@@ -1,13 +1,16 @@
 "use client";
-
 import { useMemo, useState } from "react";
 import { GameCard } from "@/components/game-card";
 import { CATS, GAMES } from "@/lib/games";
-
-export function Library() {
+import type { GameStats } from "@/lib/supabase/queries";
+// stats = null mientras carga o si la lectura falla: las tarjetas muestran "—".
+export function Library({
+  stats,
+}: {
+  stats: Record<string, GameStats> | null;
+}) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<(typeof CATS)[number]>("TODOS");
-
   const filtered = useMemo(() => {
     const query = q.toLowerCase();
     return GAMES.filter(
@@ -16,7 +19,6 @@ export function Library() {
         g.title.toLowerCase().includes(query),
     );
   }, [q, cat]);
-
   return (
     <div className="fade-in">
       <section className="av-hero">
@@ -25,7 +27,6 @@ export function Library() {
           INSERTA UNA MONEDA PARA JUGAR <span className="blink">_</span>
         </div>
       </section>
-
       <div className="av-filters">
         <div className="av-search">
           <span className="ico">⌕</span>
@@ -47,10 +48,9 @@ export function Library() {
           ))}
         </div>
       </div>
-
       <div className="av-grid">
         {filtered.map((g) => (
-          <GameCard key={g.id} game={g} />
+          <GameCard key={g.id} game={g} best={stats?.[g.id]?.best ?? null} />
         ))}
         {filtered.length === 0 && (
           <div
@@ -63,7 +63,11 @@ export function Library() {
           >
             <div
               className="pixel"
-              style={{ fontSize: 14, color: "var(--magenta)", marginBottom: 12 }}
+              style={{
+                fontSize: 14,
+                color: "var(--magenta)",
+                marginBottom: 12,
+              }}
             >
               NO HAY RESULTADOS
             </div>

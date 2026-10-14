@@ -13,10 +13,88 @@ export type Database = {
   };
   public: {
     Tables: {
-      [_ in never]: never;
+      games: {
+        Row: {
+          cat: string;
+          id: string;
+          ranked: boolean;
+          sort_order: number;
+          title: string;
+        };
+        Insert: {
+          cat: string;
+          id: string;
+          ranked?: boolean;
+          sort_order: number;
+          title: string;
+        };
+        Update: {
+          cat?: string;
+          id?: string;
+          ranked?: boolean;
+          sort_order?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      scores: {
+        Row: {
+          created_at: string;
+          game_id: string;
+          id: string;
+          player_name: string;
+          score: number;
+        };
+        Insert: {
+          created_at?: string;
+          game_id: string;
+          id?: string;
+          player_name: string;
+          score: number;
+        };
+        Update: {
+          created_at?: string;
+          game_id?: string;
+          id?: string;
+          player_name?: string;
+          score?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scores_game_id_fkey";
+            columns: ["game_id"];
+            isOneToOne: false;
+            referencedRelation: "game_stats";
+            referencedColumns: ["game_id"];
+          },
+          {
+            foreignKeyName: "scores_game_id_fkey";
+            columns: ["game_id"];
+            isOneToOne: false;
+            referencedRelation: "games";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
-      [_ in never]: never;
+      game_stats: {
+        Row: {
+          best: number | null;
+          game_id: string | null;
+          plays: number | null;
+        };
+        Relationships: [];
+      };
+      global_leaderboard: {
+        Row: {
+          games_played: number | null;
+          last_at: string | null;
+          player_name: string | null;
+          total_score: number | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       [_ in never]: never;

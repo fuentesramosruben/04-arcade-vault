@@ -1,19 +1,15 @@
 "use client";
-
 import { useRef, type MouseEvent } from "react";
 import Link from "next/link";
 import type { Game } from "@/lib/games";
-
 const BTN_COLOR: Record<Game["color"], string> = {
   cyan: "",
   green: "",
   magenta: " magenta",
   yellow: " yellow",
 };
-
-export function GameCard({ game }: { game: Game }) {
+export function GameCard({ game, best }: { game: Game; best: number | null }) {
   const tiltRef = useRef<HTMLAnchorElement>(null);
-
   const onMove = (e: MouseEvent<HTMLAnchorElement>) => {
     const el = tiltRef.current;
     if (!el) return;
@@ -22,12 +18,10 @@ export function GameCard({ game }: { game: Game }) {
     const py = (e.clientY - r.top) / r.height - 0.5;
     el.style.transform = `translateY(-6px) rotateX(${-py * 6}deg) rotateY(${px * 8}deg)`;
   };
-
   const onLeave = () => {
     const el = tiltRef.current;
     if (el) el.style.transform = "";
   };
-
   return (
     <Link
       ref={tiltRef}
@@ -46,7 +40,7 @@ export function GameCard({ game }: { game: Game }) {
         <div className="row">
           <div className="score-badge">
             <span>MEJOR PUNTUACIÓN</span>
-            <b>{game.best.toLocaleString("es-ES")}</b>
+            <b>{best === null ? "—" : best.toLocaleString("es-ES")}</b>
           </div>
           <span className={"btn" + BTN_COLOR[game.color]}>JUGAR</span>
         </div>
