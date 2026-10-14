@@ -12,6 +12,16 @@ const LIVES = 3;
 const SCORES_KEY = "av_scores";
 const INITIAL_STATS: GameStats = { score: 0, lives: LIVES, level: 1 };
 
+// Leyenda de teclas bajo el marco CRT, por juego con motor
+const CONTROLS: Record<string, { keys: string[]; label: string }[]> = {
+  asteroides: [
+    { keys: ["←", "→"], label: "girar" },
+    { keys: ["↑"], label: "propulsar" },
+    { keys: ["ESPACIO"], label: "disparar" },
+    { keys: ["P"], label: "pausa" },
+  ],
+};
+
 interface SavedScore {
   game: string;
   score: number;
@@ -192,6 +202,32 @@ export function GamePlayer({ game }: { game: Game }) {
           <span>CARGA · 1MB</span>
         </div>
       </div>
+
+      {CONTROLS[game.id] && (
+        <ul
+          className="mono m-0 flex list-none flex-wrap justify-center gap-x-6 gap-y-3 p-0"
+          style={{ marginTop: 22 }}
+          aria-label="Controles"
+        >
+          {CONTROLS[game.id].map(({ keys, label }) => (
+            <li key={label} className="flex items-center gap-2">
+              <span className="flex gap-1">
+                {keys.map((k) => (
+                  <kbd
+                    key={k}
+                    className="border-line bg-bg-3 text-cyan inline-flex min-w-7 items-center justify-center rounded-sm border border-b-2 px-2 py-1 text-[11px] leading-none tracking-widest"
+                  >
+                    {k}
+                  </kbd>
+                ))}
+              </span>
+              <span className="text-ink-dim text-[11px] tracking-widest">
+                {label}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {over && (
         <div className="modal-bd">
