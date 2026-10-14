@@ -1,6 +1,6 @@
 # SPEC 06 — Leaderboard por juego, ranking global y tabla de juegos en Supabase
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 01, SPEC 04, SPEC 05
 > **Date:** 2026-10-14
 > **Objective:** Crear las tablas `games` y `scores` en Supabase y reemplazar el Salón de la Fama mock por un ranking global (`/salon`) y un leaderboard por juego (`/salon/[id]`) alimentados por las partidas reales de los juegos con motor.
