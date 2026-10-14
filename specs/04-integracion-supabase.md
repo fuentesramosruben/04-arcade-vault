@@ -1,6 +1,6 @@
 # SPEC 04 — Integración base de Supabase
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 03
 > **Date:** 2026-10-14
 > **Objective:** Conectar la app Next.js al proyecto de Supabase existente (`rvdlyinimpdntwggwrew`) con clientes de navegador y de servidor tipados, variables de entorno documentadas y una conexión verificada, sin cambiar todavía ninguna pantalla.
