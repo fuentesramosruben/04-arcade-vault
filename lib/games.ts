@@ -81,6 +81,17 @@ export const GAMES: Game[] = [
     plays: "15.6K",
   },
   {
+    id: "asteroides",
+    title: "ASTEROIDES",
+    short: "Esquiva, dispara y despeja el campo de rocas.",
+    long: "Gira, propulsa y dispara tu nave en un campo de asteroides sin bordes: lo que sale por un lado vuelve por el otro. Cada roca se parte en fragmentos más rápidos y un power-up de triple disparo puede salvarte la partida. Limpia el campo para subir de nivel.",
+    cat: "SHOOTER",
+    cover: "cover-asteroides",
+    color: "cyan",
+    best: 0,
+    plays: "0",
+  },
+  {
     id: "ranaria",
     title: "RANARIA",
     short: "Cruza la autopista de pixeles.",
