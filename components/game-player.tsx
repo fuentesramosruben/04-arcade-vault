@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { GameCanvas, type GameCanvasHandle } from "@/components/game-canvas";
 import { useSession } from "@/components/session-provider";
 import type { Game } from "@/lib/games";
+import { ENGINES } from "@/lib/games/registry";
+import type { GameStats } from "@/lib/games/types";
 
 const LIVES = 3;
 const SCORES_KEY = "av_scores";
+const INITIAL_STATS: GameStats = { score: 0, lives: LIVES, level: 1 };
 
 interface SavedScore {
   game: string;
@@ -29,29 +33,72 @@ function saveScore(entry: Omit<SavedScore, "at">) {
 
 export function GamePlayer({ game }: { game: Game }) {
   const { user } = useSession();
-  const [score, setScore] = useState(0);
+  const hasEngine = game.id in ENGINES;
+  const canvasRef = useRef<GameCanvasHandle>(null);
+  const [stats, setStats] = useState<GameStats>(INITIAL_STATS);
+  const [runKey, setRunKey] = useState(0);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [editedName, setEditedName] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
   const name = editedName ?? user?.name ?? "INVITADO";
-  const level = 1 + Math.floor(score / 2500);
+  const { score, lives } = stats;
+  // Con motor el nivel viene del juego; sin motor se calcula por puntuación
+  const level = hasEngine ? stats.level : 1 + Math.floor(score / 2500);
 
+  // Camino mock: puntuación simulada
   useEffect(() => {
-    if (over || paused) return;
+    if (hasEngine || over || paused) return;
     const t = setInterval(
-      () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
+      () =>
+        setStats((s) => ({
+          ...s,
+          score: s.score + Math.floor(10 + Math.random() * 90),
+        })),
       220,
     );
     return () => clearInterval(t);
-  }, [over, paused]);
+  }, [hasEngine, over, paused]);
+
+  // P y Esc alternan la pausa (solo con motor)
+  useEffect(() => {
+    if (!hasEngine || over) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code !== "KeyP" && e.code !== "Escape") return;
+      if (e.repeat) return;
+      const t = e.target;
+      if (t instanceof HTMLElement && t.closest("input, textarea")) return;
+      setPaused((p) => !p);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [hasEngine, over]);
 
   const restart = () => {
-    setScore(0);
+    setStats(INITIAL_STATS);
     setPaused(false);
     setOver(false);
     setSaved(false);
+    setRunKey((k) => k + 1);
+  };
+
+  const handleGameOver = (finalScore: number) => {
+    setStats((s) => ({ ...s, score: finalScore }));
+    setPaused(false);
+    setOver(true);
+  };
+
+  // Se quita el foco al pulsar un botón: si no, Espacio lo reactivaría mientras se juega
+  const togglePause = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.blur();
+    setPaused((p) => !p);
+  };
+
+  const handleEnd = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.blur();
+    if (hasEngine) canvasRef.current?.end();
+    else setOver(true);
   };
 
   const handleSave = () => {
@@ -75,7 +122,7 @@ export function GamePlayer({ game }: { game: Game }) {
           </div>
           <div className="hud-stat lives">
             <div className="l">Vidas</div>
-            <div className="v">{"♥ ".repeat(LIVES).trim()}</div>
+            <div className="v">{"♥ ".repeat(lives).trim() || "—"}</div>
           </div>
           <div className="hud-stat level">
             <div className="l">Nivel</div>
@@ -83,10 +130,10 @@ export function GamePlayer({ game }: { game: Game }) {
           </div>
         </div>
         <div className="hud-actions">
-          <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
+          <button className="btn yellow" onClick={togglePause}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
-          <button className="btn magenta" onClick={() => setOver(true)}>
+          <button className="btn magenta" onClick={handleEnd}>
             FIN
           </button>
           <Link href={`/juegos/${game.id}`} className="btn ghost">
@@ -97,13 +144,24 @@ export function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          <div className="game-arena">
-            <div className="grid-floor"></div>
-            <div className="enemy e1"></div>
-            <div className="enemy e2"></div>
-            <div className="enemy e3"></div>
-            <div className="player-ship"></div>
-          </div>
+          {hasEngine ? (
+            <GameCanvas
+              ref={canvasRef}
+              gameId={game.id}
+              paused={paused}
+              runKey={runKey}
+              onStats={setStats}
+              onGameOver={handleGameOver}
+            />
+          ) : (
+            <div className="game-arena">
+              <div className="grid-floor"></div>
+              <div className="enemy e1"></div>
+              <div className="enemy e2"></div>
+              <div className="enemy e3"></div>
+              <div className="player-ship"></div>
+            </div>
+          )}
           {paused && (
             <div
               className="crt-content"
