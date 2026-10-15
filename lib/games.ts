@@ -76,6 +76,15 @@ export const GAMES: Game[] = [
     color: "cyan",
   },
   {
+    id: "tetris",
+    title: "TETRIS",
+    short: "Encaja las piezas y limpia líneas sin llegar al techo.",
+    long: "Ocho piezas caen sobre un pozo de diez columnas, incluida una tuerca con hueco que complica cada encaje. Rótalas, desliza y deja caer al instante, con la sombra de aterrizaje como guía. Cada diez líneas sube el nivel y la caída se acelera. Compite por el ranking.",
+    cat: "PUZZLE",
+    cover: "cover-tetris",
+    color: "yellow",
+  },
+  {
     id: "ranaria",
     title: "RANARIA",
     short: "Cruza la autopista de pixeles.",

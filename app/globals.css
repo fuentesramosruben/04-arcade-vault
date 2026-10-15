@@ -454,6 +454,14 @@ a { color: inherit; text-decoration: none; }
   image-rendering: pixelated;
 }
 
+.cover-tetris { background: radial-gradient(circle at 50% 0%, #2e2600, #0a0a18 75%); }
+.cover-tetris::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' fill='none' stroke-width='2'%3E%3Cpath d='M140 10 V290 H260 V10' stroke='%2300f5ff' stroke-opacity='.55'/%3E%3Cg stroke='none' fill-opacity='.85'%3E%3Cg fill='%2300f5ff'%3E%3Crect x='141' y='271' width='18' height='18'/%3E%3Crect x='161' y='271' width='18' height='18'/%3E%3Crect x='141' y='251' width='18' height='18'/%3E%3Crect x='141' y='231' width='18' height='18'/%3E%3C/g%3E%3Cg fill='%23ff006e'%3E%3Crect x='181' y='271' width='18' height='18'/%3E%3Crect x='201' y='271' width='18' height='18'/%3E%3Crect x='181' y='251' width='18' height='18'/%3E%3C/g%3E%3Cg fill='%23f5ff00'%3E%3Crect x='221' y='271' width='18' height='18'/%3E%3Crect x='201' y='251' width='18' height='18'/%3E%3Crect x='221' y='251' width='18' height='18'/%3E%3Crect x='241' y='31' width='18' height='18' fill-opacity='1'/%3E%3Crect x='241' y='51' width='18' height='18' fill-opacity='1'/%3E%3Crect x='241' y='71' width='18' height='18' fill-opacity='1'/%3E%3Crect x='241' y='91' width='18' height='18' fill-opacity='1'/%3E%3C/g%3E%3C/g%3E%3Cg stroke='%23f5ff00' stroke-opacity='.55' stroke-width='1.5' stroke-dasharray='4 3' fill='%23f5ff00' fill-opacity='.12'%3E%3Crect x='241' y='211' width='18' height='18'/%3E%3Crect x='241' y='231' width='18' height='18'/%3E%3Crect x='241' y='251' width='18' height='18'/%3E%3Crect x='241' y='271' width='18' height='18'/%3E%3C/g%3E%3Crect x='300' y='40' width='70' height='70' stroke='%23ff006e' stroke-opacity='.5' stroke-width='1.5'/%3E%3Cg fill='%23e6e9ff' stroke='none'%3E%3Crect x='315' y='55' width='12' height='12'/%3E%3Crect x='329' y='55' width='12' height='12'/%3E%3Crect x='343' y='55' width='12' height='12'/%3E%3Crect x='315' y='69' width='12' height='12'/%3E%3Crect x='343' y='69' width='12' height='12'/%3E%3Crect x='315' y='83' width='12' height='12'/%3E%3Crect x='329' y='83' width='12' height='12'/%3E%3Crect x='343' y='83' width='12' height='12'/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat;
+  filter: drop-shadow(0 0 6px rgba(245,255,0,0.45));
+}
+
 .cover-snake { background: linear-gradient(135deg,#003a2a,#0a0a18); }
 .cover-snake::after {
   content: "";
