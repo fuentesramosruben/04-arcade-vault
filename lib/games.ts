@@ -1,6 +1,5 @@
 export type GameCategory = "ARCADE" | "PUZZLE" | "SHOOTER" | "VERSUS";
 export type GameColor = "cyan" | "magenta" | "yellow" | "green";
-
 export interface Game {
   id: string;
   title: string;
@@ -10,7 +9,6 @@ export interface Game {
   cover: string;
   color: GameColor;
 }
-
 export const GAMES: Game[] = [
   {
     id: "bloque-buster",
@@ -85,6 +83,15 @@ export const GAMES: Game[] = [
     color: "yellow",
   },
   {
+    id: "arkanoid",
+    title: "ARKANOID",
+    short: "Rompe la pirámide de bloques con una sola pelota.",
+    long: "Mueve la pala con las flechas o el ratón y no dejes caer la pelota. Cinco niveles de muros distintos, desde el rectángulo hasta el marco con cruz, y la pelota va más rápida en cada uno. Tienes tres vidas para limpiar los 208 bloques. Compite por el ranking.",
+    cat: "ARCADE",
+    cover: "cover-arkanoid",
+    color: "magenta",
+  },
+  {
     id: "ranaria",
     title: "RANARIA",
     short: "Cruza la autopista de pixeles.",
@@ -103,7 +110,6 @@ export const GAMES: Game[] = [
     color: "cyan",
   },
 ];
-
 export const CATS: ("TODOS" | GameCategory)[] = [
   "TODOS",
   "ARCADE",
