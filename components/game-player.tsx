@@ -241,7 +241,18 @@ export function GamePlayer({ game }: { game: Game }) {
             </div>
           )}
         </div>
-        <div className="crt-bottom">
+        <div
+          className="crt-bottom"
+          style={
+            customRatio
+              ? {
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  gap: "6px 14px",
+                }
+              : undefined
+          }
+        >
           <span className="led">SEÑAL OK</span>
           <span>{game.title} · CRT-83 · 60 HZ</span>
           <span>CARGA · 1MB</span>
