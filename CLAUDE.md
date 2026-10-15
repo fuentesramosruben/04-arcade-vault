@@ -12,6 +12,8 @@ No hay framework de tests configurado.
 
 Usa siempre /frontend-design para diseñar interfaz de usuario.
 
+Para un juego nuevo con motor y ranking (portado desde `references/started-games/` o desde cero) usa `/add-game <id|carpeta>`: lee `/spec`, genera `specs/NN-juego-<id>.md` y se implementa luego con `/spec-impl`.
+
 ## Arquitectura / advertencias
 
 - **Next.js 16.4 + React 19.3** con App Router (`app/`). Esta versión tiene cambios incompatibles respecto a lo que se conoce: antes de escribir código, leer la guía relevante en `node_modules/next/dist/docs/` (`01-app`, `02-pages`, `03-architecture`, `04-community`) y respetar los avisos de deprecación (así lo exige `AGENTS.md`).

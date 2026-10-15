@@ -4,14 +4,21 @@ import Link from "next/link";
 import { GameCanvas, type GameCanvasHandle } from "@/components/game-canvas";
 import { useSession } from "@/components/session-provider";
 import type { Game } from "@/lib/games";
-import { ENGINES } from "@/lib/games/registry";
+import { ENGINES, getEngineMeta } from "@/lib/games/registry";
 import type { GameStats } from "@/lib/games/types";
 import { createClient } from "@/lib/supabase/client";
 const LIVES = 3;
 const MIN_NAME = 3;
 const MAX_NAME = 12;
 const SCORES_KEY = "av_scores";
-const INITIAL_STATS: GameStats = { score: 0, lives: LIVES, level: 1 };
+function initialStats(meta: ReturnType<typeof getEngineMeta>): GameStats {
+  return {
+    score: 0,
+    level: 1,
+    ...(meta.lives && { lives: LIVES }),
+    ...(meta.lines && { lines: 0 }),
+  };
+}
 // Leyenda de teclas bajo el marco CRT, por juego con motor
 const CONTROLS: Record<string, { keys: string[]; label: string }[]> = {
   asteroides: [
@@ -42,7 +49,8 @@ export function GamePlayer({ game }: { game: Game }) {
   const { user } = useSession();
   const hasEngine = game.id in ENGINES;
   const canvasRef = useRef<GameCanvasHandle>(null);
-  const [stats, setStats] = useState<GameStats>(INITIAL_STATS);
+  const meta = getEngineMeta(game.id);
+  const [stats, setStats] = useState<GameStats>(() => initialStats(meta));
   const [runKey, setRunKey] = useState(0);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
@@ -55,7 +63,16 @@ export function GamePlayer({ game }: { game: Game }) {
   const cleanName = name.trim().toUpperCase().slice(0, MAX_NAME).trim();
   const canSave =
     !hasEngine || (cleanName.length >= MIN_NAME && stats.score >= 1);
-  const { score, lives } = stats;
+  const { score, lives, lines } = stats;
+  // Marco del CRT con la proporción del canvas; solo se limita el ancho si no es el 4:3 por defecto
+  const customRatio = meta.width !== 800 || meta.height !== 600;
+  const screenStyle = { aspectRatio: `${meta.width} / ${meta.height}` };
+  const crtStyle = customRatio
+    ? {
+        maxWidth: `max(240px, calc((100svh - 300px) * ${meta.width / meta.height} + 48px))`,
+        marginInline: "auto",
+      }
+    : undefined;
   // Con motor el nivel viene del juego; sin motor se calcula por puntuación
   const level = hasEngine ? stats.level : 1 + Math.floor(score / 2500);
   // Camino mock: puntuación simulada
@@ -85,7 +102,7 @@ export function GamePlayer({ game }: { game: Game }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [hasEngine, over]);
   const restart = () => {
-    setStats(INITIAL_STATS);
+    setStats(initialStats(meta));
     setPaused(false);
     setOver(false);
     setSaved(false);
@@ -144,10 +161,18 @@ export function GamePlayer({ game }: { game: Game }) {
             <div className="l">Puntuación</div>
             <div className="v">{score.toLocaleString("es-ES")}</div>
           </div>
-          <div className="hud-stat lives">
-            <div className="l">Vidas</div>
-            <div className="v">{"♥ ".repeat(lives).trim() || "—"}</div>
-          </div>
+          {lives !== undefined && (
+            <div className="hud-stat lives">
+              <div className="l">Vidas</div>
+              <div className="v">{"♥ ".repeat(lives).trim() || "—"}</div>
+            </div>
+          )}
+          {lines !== undefined && (
+            <div className="hud-stat">
+              <div className="l">Líneas</div>
+              <div className="v">{lines.toLocaleString("es-ES")}</div>
+            </div>
+          )}
           <div className="hud-stat level">
             <div className="l">Nivel</div>
             <div className="v">{String(level).padStart(2, "0")}</div>
@@ -165,8 +190,8 @@ export function GamePlayer({ game }: { game: Game }) {
           </Link>
         </div>
       </div>
-      <div className="crt">
-        <div className="crt-screen">
+      <div className="crt" style={crtStyle}>
+        <div className="crt-screen" style={screenStyle}>
           {hasEngine ? (
             <GameCanvas
               ref={canvasRef}

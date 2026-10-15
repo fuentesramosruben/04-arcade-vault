@@ -1,7 +1,8 @@
 export interface GameStats {
   score: number;
-  lives: number;
+  lives?: number; // si falta, el HUD oculta VIDAS
   level: number;
+  lines?: number; // si viene, el HUD muestra LÍNEAS
 }
 export interface GameEngineCallbacks {
   onStats(stats: GameStats): void; // cada vez que cambia score, lives o level
