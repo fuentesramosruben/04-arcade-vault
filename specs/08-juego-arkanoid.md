@@ -1,6 +1,6 @@
 # SPEC 08 — Juego Arkanoid jugable en la plataforma con ranking
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 05, SPEC 06, SPEC 07
 > **Date:** 2026-10-15
 > **Objective:** Portar a TypeScript el juego de `references/started-games/04-arkanoid` como el juego `arkanoid` de Arcade Vault, jugable con HUD, pausa y modal de la plataforma, y con leaderboard en `/salon/arkanoid`.
