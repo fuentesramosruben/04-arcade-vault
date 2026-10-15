@@ -39,6 +39,11 @@ const CONTROLS: Record<string, { keys: string[]; label: string }[]> = {
     { keys: ["RATÓN"], label: "o ratón" },
     { keys: ["P"], label: "pausa" },
   ],
+  snake: [
+    { keys: ["←", "↑", "↓", "→"], label: "girar" },
+    { keys: ["W", "A", "S", "D"], label: "o WASD" },
+    { keys: ["P"], label: "pausa" },
+  ],
 };
 interface SavedScore {
   game: string;
