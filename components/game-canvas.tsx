@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useImperativeHandle, useRef } from "react";
-import { ENGINES } from "@/lib/games/registry";
+import { ENGINES, getEngineMeta } from "@/lib/games/registry";
 import type { GameEngine, GameStats } from "@/lib/games/types";
 export interface GameCanvasHandle {
   end(): void;
@@ -14,7 +14,7 @@ interface GameCanvasProps {
   onGameOver(finalScore: number): void;
   ref?: React.Ref<GameCanvasHandle>;
 }
-// El canvas es de 800×600 lógicos; el CSS lo escala al marco 4:3 del CRT.
+// El tamaño lógico viene de ENGINE_META (800×600 por defecto); el CSS lo escala al marco del CRT.
 export function GameCanvas({
   gameId,
   paused,
@@ -23,6 +23,7 @@ export function GameCanvas({
   onGameOver,
   ref,
 }: GameCanvasProps) {
+  const { width, height } = getEngineMeta(gameId);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
   const callbacksRef = useRef({ onStats, onGameOver });
@@ -62,6 +63,8 @@ export function GameCanvas({
   return (
     <canvas
       ref={canvasRef}
+      width={width}
+      height={height}
       className="absolute inset-0 block h-full w-full"
       aria-label="Pantalla del juego"
     />
