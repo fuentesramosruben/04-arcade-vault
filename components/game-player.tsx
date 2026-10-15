@@ -27,6 +27,13 @@ const CONTROLS: Record<string, { keys: string[]; label: string }[]> = {
     { keys: ["ESPACIO"], label: "disparar" },
     { keys: ["P"], label: "pausa" },
   ],
+  tetris: [
+    { keys: ["←", "→"], label: "mover" },
+    { keys: ["↑"], label: "rotar" },
+    { keys: ["↓"], label: "bajar" },
+    { keys: ["ESPACIO"], label: "caída" },
+    { keys: ["P"], label: "pausa" },
+  ],
 };
 interface SavedScore {
   game: string;
