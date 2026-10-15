@@ -39,6 +39,10 @@ import {
   type Direction,
 } from "./entities";
 type State = "playing" | "gameover";
+// Ojos de la cabeza (px dentro de la celda de 40)
+const EYE_SIZE = 5;
+const EYE_FRONT = 27; // distancia del borde trasero al ojo, mirando a derecha o abajo
+const EYE_SIDE = [8, 27]; // posiciones a lo ancho de la cabeza
 const KEY_DIRECTIONS: Record<string, Direction> = {
   ArrowUp: "up",
   ArrowDown: "down",
@@ -230,6 +234,23 @@ export const createSnakeEngine: GameEngineFactory = (
     ctx.shadowBlur = 14;
     ctx.fillRect(head.col * CELL + 1, head.row * CELL + 1, CELL - 2, CELL - 2);
     ctx.restore();
+    // Ojos: dos puntos junto al borde delantero, según la dirección
+    ctx.fillStyle = BG_COLOR;
+    const hx = head.col * CELL;
+    const hy = head.row * CELL;
+    for (const side of EYE_SIDE) {
+      const front =
+        direction === "right" || direction === "down"
+          ? EYE_FRONT
+          : CELL - EYE_FRONT - EYE_SIZE;
+      const horizontal = direction === "left" || direction === "right";
+      ctx.fillRect(
+        hx + (horizontal ? front : side),
+        hy + (horizontal ? side : front),
+        EYE_SIZE,
+        EYE_SIZE,
+      );
+    }
   }
   // ── Bucle ──────────────────────────────────────────────────────────────────
   function loop(ts: number) {
