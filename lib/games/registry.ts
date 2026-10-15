@@ -1,7 +1,9 @@
 import { createAsteroidsEngine } from "./asteroids/engine";
+import { createTetrisEngine } from "./tetris/engine";
 import type { GameEngineFactory } from "./types";
 export const ENGINES: Record<string, GameEngineFactory> = {
   asteroides: createAsteroidsEngine,
+  tetris: createTetrisEngine,
 };
 export interface EngineMeta {
   width: number; // por defecto 800
