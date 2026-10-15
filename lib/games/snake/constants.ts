@@ -48,10 +48,18 @@ export const FRUIT_SPRITES: Record<string, SpriteRect> = {
   melon: { x: 3637, y: 136, w: 130, h: 160 },
 };
 export const FRUIT_KEYS = Object.keys(FRUIT_SPRITES);
-// Colores por defecto; el motor los sustituye por los tokens del tema en start()
-export const DEFAULT_COLORS = {
-  bg: "#0a0a12",
-  grid: "rgba(255,255,255,0.05)",
-  snake: "#39ff14",
-  fruit: "#ff2bd6",
+// Tokens del tema que lee el motor en start() y sus valores por defecto
+export const COLOR_VARS = {
+  ink: "--ink",
+  snake: "--green",
+  fruit: "--magenta",
+} as const;
+export type ColorKey = keyof typeof COLOR_VARS;
+export type Colors = Record<ColorKey, string>;
+export const DEFAULT_COLORS: Colors = {
+  ink: "#e6e9ff",
+  snake: "#00ff88",
+  fruit: "#ff006e",
 };
+export const BG_COLOR = "#000";
+export const GRID_ALPHA = 0.06;
