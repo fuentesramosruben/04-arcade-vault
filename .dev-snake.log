@@ -90,3 +90,40 @@ Learn more: https://nextjs.org/docs/messages/instant-shell-url-data
   13 |   const game = GAMES.find((g) => g.id === id);
   14 |   if (!game) notFound();
   15 |
+ GET /salon/snake 200 in 848ms (next.js: 65ms, proxy.ts: 45ms, generate-params: 460ms, application-code: 278ms)
+ GET /salon/serpentina 404 in 68ms (next.js: 35ms, proxy.ts: 4ms, application-code: 30ms)
+Error: Route "/salon/[id]": Next.js encountered URL data during prerendering or a navigation.
+
+`params` or `searchParams` accessed outside of `<Suspense>` may prevent the navigation from being instant, leading to a slower user experience.
+
+Ways to fix this:
+  - [stream] Provide a placeholder with `<Suspense fallback={...}>` around the data access
+  - [block] Set `export const instant = false` to allow a blocking route
+
+Learn more: https://nextjs.org/docs/messages/instant-shell-url-data
+    at GameHallPage (app\salon\[id]\page.tsx:50:18)
+  48 |   params,
+  49 | }: PageProps<"/salon/[id]">) {
+> 50 |   const { id } = await params;
+     |                  ^
+  51 |   const game = GAMES.find((g) => g.id === id);
+  52 |   if (!game || !(game.id in ENGINES)) notFound();
+  53 |   return (
+ GET /juegos/snake 200 in 685ms (next.js: 14ms, generate-params: 469ms, application-code: 202ms)
+Error: Route "/juegos/[id]": Next.js encountered URL data during prerendering or a navigation.
+
+`params` or `searchParams` accessed outside of `<Suspense>` may prevent the navigation from being instant, leading to a slower user experience.
+
+Ways to fix this:
+  - [stream] Provide a placeholder with `<Suspense fallback={...}>` around the data access
+  - [block] Set `export const instant = false` to allow a blocking route
+
+Learn more: https://nextjs.org/docs/messages/instant-shell-url-data
+    at GameDetailPage (app\juegos\[id]\page.tsx:109:18)
+  107 |   params,
+  108 | }: PageProps<"/juegos/[id]">) {
+> 109 |   const { id } = await params;
+      |                  ^
+  110 |   const game = GAMES.find((g) => g.id === id);
+  111 |   if (!game) notFound();
+  112 |   return (
