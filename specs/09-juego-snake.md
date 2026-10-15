@@ -1,6 +1,6 @@
 # SPEC 09 — Juego Snake jugable en la plataforma con ranking
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 05, SPEC 06, SPEC 07
 > **Date:** 2026-10-15
 > **Objective:** Crear desde cero el juego `snake` en Arcade Vault (reutilizando y renombrando el mock `serpentina`), jugable con HUD, pausa y modal de la plataforma, con frutas pixel-art como comida y leaderboard en `/salon/snake`.
