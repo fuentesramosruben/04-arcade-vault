@@ -34,6 +34,11 @@ const CONTROLS: Record<string, { keys: string[]; label: string }[]> = {
     { keys: ["ESPACIO"], label: "caída" },
     { keys: ["P"], label: "pausa" },
   ],
+  arkanoid: [
+    { keys: ["←", "→"], label: "mover" },
+    { keys: ["RATÓN"], label: "o ratón" },
+    { keys: ["P"], label: "pausa" },
+  ],
 };
 interface SavedScore {
   game: string;
