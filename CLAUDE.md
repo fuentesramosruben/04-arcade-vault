@@ -28,6 +28,8 @@ Para un juego nuevo con motor y ranking (portado desde `references/started-games
 
 Skills del proyecto en `.claude/skills/`: `spec` y `spec-impl` (de `Klerith/fernando-skills`, registradas en `skills-lock.json`) y `add-game` (propia). Las tres son de invocación manual (`disable-model-invocation`).
 
+Subagente `game-planner` (`.claude/agents/game-planner.md`): decide qué juego encaja con la plataforma puntuando candidatos y termina proponiendo `/add-game <id>`. No escribe código ni specs. Memoria persistente versionada en `.claude/agent-memory/game-planner/` (`memory: project`) y backlog de sugerencias en `references/game-suggestions-todo.md`, que el agente actualiza en cada ejecución.
+
 ## Hooks y MCP
 
 - `.claude/settings.json` define un hook `PostToolUse` (`Write|Edit`) que ejecuta `.claude/hooks/format-lint.mjs`: quita líneas en blanco y espacios finales en JS/TS/CSS, pasa Prettier y ESLint `--fix`, y falla (exit 2) si ESLint deja errores.
