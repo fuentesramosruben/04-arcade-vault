@@ -30,6 +30,8 @@ Skills del proyecto en `.claude/skills/`: `spec` y `spec-impl` (de `Klerith/fern
 
 Subagente `game-planner` (`.claude/agents/game-planner.md`): decide qué juego encaja con la plataforma puntuando candidatos y termina proponiendo `/add-game <id>`. No escribe código ni specs. Memoria persistente versionada en `.claude/agent-memory/game-planner/` (`memory: project`) y backlog de sugerencias en `references/game-suggestions-todo.md`, que el agente actualiza en cada ejecución.
 
+Subagente `game-jam` (`.claude/agents/game-jam.md`): recibe un tema, elige un juego y genera al menos 2 specs completos (juego base + iteraciones, formato SPEC 07-09, `Status: Borrador`) más un `README.md` en `specs/game-jam/<game-id>/`. Decide sin preguntar y anota sus decisiones para revisión. No escribe código ni migraciones. Memoria en `.claude/agent-memory/game-jam/`.
+
 ## Hooks y MCP
 
 - `.claude/settings.json` define un hook `PostToolUse` (`Write|Edit`) que ejecuta `.claude/hooks/format-lint.mjs`: quita líneas en blanco y espacios finales en JS/TS/CSS, pasa Prettier y ESLint `--fix`, y falla (exit 2) si ESLint deja errores.
