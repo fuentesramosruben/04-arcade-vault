@@ -1,6 +1,6 @@
 # SPEC 03 — Página "Acerca de" y formulario de contacto con Resend
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 01, SPEC 02
 > **Date:** 2026-10-13
 > **Objective:** Portar a Next.js la página `references/templates/home-about/about.jsx` como `/acerca` y hacer que su formulario de contacto envíe un correo real mediante Resend desde una Server Action.
