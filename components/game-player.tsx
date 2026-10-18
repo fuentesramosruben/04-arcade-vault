@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { GameCanvas, type GameCanvasHandle } from "@/components/game-canvas";
 import { useSession } from "@/components/session-provider";
+import { TouchControls } from "@/components/touch-controls";
 import type { Game } from "@/lib/games";
 import { ENGINES, getEngineMeta } from "@/lib/games/registry";
 import {
@@ -313,7 +314,7 @@ export function GamePlayer({ game }: { game: Game }) {
       </div>
       {CONTROLS[game.id] && (
         <ul
-          className="mono m-0 flex list-none flex-wrap justify-center gap-x-6 gap-y-3 p-0"
+          className="mono pointer-coarse:hidden m-0 flex list-none flex-wrap justify-center gap-x-6 gap-y-3 p-0"
           style={{ marginTop: 22 }}
           aria-label="Controles"
         >
@@ -335,6 +336,14 @@ export function GamePlayer({ game }: { game: Game }) {
             </li>
           ))}
         </ul>
+      )}
+      {hasEngine && (
+        // key: al reiniciar se remonta y se sueltan las teclas virtuales
+        <TouchControls
+          key={runKey}
+          gameId={game.id}
+          active={!paused && !over}
+        />
       )}
       {over && (
         <div className="modal-bd">
