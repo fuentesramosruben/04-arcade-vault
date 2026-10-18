@@ -61,5 +61,8 @@ export const DEFAULT_COLORS: Colors = {
   snake: "#00ff88",
   fruit: "#ff006e",
 };
-export const BG_COLOR = "#000";
+export const BG_COLOR = "#000"; // valor por defecto de --game-bg
+export const BG_VAR = "--game-bg";
+export const GLOW_VAR = "--game-glow-snake"; // px sin unidad
+export const DEFAULT_GLOW = 14;
 export const GRID_ALPHA = 0.06;

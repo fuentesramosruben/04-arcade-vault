@@ -6,13 +6,16 @@ import type {
 } from "../types";
 import {
   BG_COLOR,
+  BG_VAR,
   CELL,
   COLOR_VARS,
   COLS,
   DEFAULT_COLORS,
+  DEFAULT_GLOW,
   FRUIT_KEYS,
   FRUIT_SHEET_URL,
   FRUIT_SPRITES,
+  GLOW_VAR,
   GRID_ALPHA,
   H,
   MAX_DT,
@@ -62,6 +65,13 @@ function readColors(canvas: HTMLCanvasElement): Colors {
   }
   return colors;
 }
+function readBg(canvas: HTMLCanvasElement): string {
+  return getComputedStyle(canvas).getPropertyValue(BG_VAR).trim() || BG_COLOR;
+}
+function readGlow(canvas: HTMLCanvasElement): number {
+  const n = parseFloat(getComputedStyle(canvas).getPropertyValue(GLOW_VAR));
+  return Number.isFinite(n) ? n : DEFAULT_GLOW;
+}
 // No se previene el comportamiento por defecto si el foco está en un control
 function isInteractive(target: EventTarget | null) {
   return (
@@ -78,6 +88,8 @@ export const createSnakeEngine: GameEngineFactory = (
   const ctx: CanvasRenderingContext2D = context;
   // ── Estado de la instancia ─────────────────────────────────────────────────
   let colors: Colors = DEFAULT_COLORS;
+  let bg = BG_COLOR;
+  let glow = DEFAULT_GLOW;
   let body: Cell[] = []; // body[0] es la cabeza
   let direction: Direction = "right";
   let turnQueue: Direction[] = [];
@@ -195,7 +207,7 @@ export const createSnakeEngine: GameEngineFactory = (
     ctx.fill();
   }
   function draw() {
-    ctx.fillStyle = BG_COLOR;
+    ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
     // Rejilla tenue
     ctx.save();
@@ -231,11 +243,11 @@ export const createSnakeEngine: GameEngineFactory = (
     ctx.save();
     ctx.fillStyle = colors.snake;
     ctx.shadowColor = colors.snake;
-    ctx.shadowBlur = 14;
+    ctx.shadowBlur = glow;
     ctx.fillRect(head.col * CELL + 1, head.row * CELL + 1, CELL - 2, CELL - 2);
     ctx.restore();
     // Ojos: dos puntos junto al borde delantero, según la dirección
-    ctx.fillStyle = BG_COLOR;
+    ctx.fillStyle = bg;
     const hx = head.col * CELL;
     const hy = head.row * CELL;
     for (const side of EYE_SIDE) {
@@ -293,6 +305,8 @@ export const createSnakeEngine: GameEngineFactory = (
       if (started || destroyed) return;
       started = true;
       colors = readColors(canvas);
+      bg = readBg(canvas);
+      glow = readGlow(canvas);
       canvas.width = W;
       canvas.height = H;
       // La partida no espera al PNG: mientras tanto se usa el círculo de respaldo
@@ -333,6 +347,14 @@ export const createSnakeEngine: GameEngineFactory = (
       gameOver();
       // El bucle se detiene solo; si estaba en pausa se pinta un último fotograma
       if (paused) draw();
+    },
+    refreshPalette() {
+      if (destroyed) return;
+      colors = readColors(canvas);
+      bg = readBg(canvas);
+      glow = readGlow(canvas);
+      // En pausa o fin de partida no hay bucle: se repinta el fotograma
+      if (started && rafId === null) draw();
     },
     destroy() {
       destroyed = true;

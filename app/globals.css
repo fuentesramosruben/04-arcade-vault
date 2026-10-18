@@ -49,6 +49,7 @@
     --game-bg: #000;
     --game-glow: 10;
     --game-glow-asteroid: 0;
+    --game-paddle-sprite: 1; /* arkanoid: pala con sprite solo en clásico */
     --pixel: var(--font-press-start), "Press Start 2P", system-ui, monospace;
     --mono:
       var(--font-jetbrains-mono), "JetBrains Mono", var(--font-courier-prime),
@@ -1127,6 +1128,16 @@
       inset 0 0 60px rgba(0, 0, 0, 0.7),
       inset 0 0 40px rgba(255, 43, 214, 0.35);
   }
+  /* Arkanoid neón: tonos extra para bloques que no salen de los tokens base */
+  .crt[data-skin="neon"][data-game="arkanoid"] {
+    --game-paddle-sprite: 0;
+    --game-red: #ff7a1a;
+    --game-hotpink: #4f8bff;
+    --game-gray: #ffd60a;
+  }
+  .crt[data-skin="neon"][data-game="snake"] {
+    --game-glow-snake: 30; /* brillo de la cabeza */
+  }
   /* Skin RETRO: fósforo 8-bit, paleta reducida verde/ámbar, sin glow, fondo casi negro cálido */
   .crt[data-skin="retro"] {
     --cyan: #33ff66;
@@ -1138,6 +1149,17 @@
     --game-flame: #ff8a1f;
     --game-glow: 0;
     --game-glow-asteroid: 0;
+  }
+  .crt[data-skin="retro"][data-game="snake"] {
+    --game-glow-snake: 0; /* sin brillo en la cabeza */
+  }
+  /* Arkanoid retro: cyan y green coinciden en la base, así que se separan los tonos de los bloques */
+  .crt[data-skin="retro"][data-game="arkanoid"] {
+    --game-paddle-sprite: 0;
+    --green: #b5e61d;
+    --game-red: #c8321f;
+    --game-hotpink: #ffe9a8;
+    --game-gray: #a89878;
   }
   .crt::before {
     content: "";

@@ -11,8 +11,8 @@ export const SKIN_LABELS: Record<SkinId, string> = {
 export const GAME_SKINS: Record<string, SkinId[]> = {
   asteroides: ["clasico", "neon", "retro"],
   tetris: ["clasico"],
-  arkanoid: ["clasico"],
-  snake: ["clasico"],
+  arkanoid: ["clasico", "neon", "retro"],
+  snake: ["clasico", "neon", "retro"],
 };
 export function getGameSkins(gameId: string): SkinId[] {
   return GAME_SKINS[gameId] ?? [DEFAULT_SKIN];

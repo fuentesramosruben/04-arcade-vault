@@ -28,3 +28,16 @@ Fuente de verdad del progreso: `references/game-with-themes.md`.
 - Dev server suele estar ya en `localhost:3000`; el reproductor está en `/juegos/<id>/jugar`.
 - El error de consola "params outside Suspense" en `/juegos/[id]/jugar` es preexistente.
 - Asteroides: tokens `--cyan`(nave), `--yellow`(bala), `--ink`(asteroide), `--magenta`(power-up).
+
+## Snake (2026-10-18, neón)
+
+- Snake migrado: `--game-bg`, `--game-glow-snake` (opcional, 14 por defecto; neón 30 vía `[data-game="snake"]`), `refreshPalette`. Serpiente = `--green`, rejilla = `--ink`, fruta de respaldo = `--magenta`; frutas sprite sin filtro.
+- Neón de snake queda ⚠️: no se pudo correr `npm run build` (dev server compartido con otro agente).
+- Lección: el hook ESLint --fix convierte `let` en `const` si aún no hay reasignación; añadir la declaración y su uso en ediciones consecutivas puede romper (hacerlo en orden: reasignaciones primero o releer).
+- Lección: el navegador Playwright es compartido entre agentes paralelos; usar pestaña propia (`page.context().newPage()`), guardar capturas en `.playwright-mcp/`, y localStorage de skin es compartido.
+- Arkanoid neón (2026-10-18): bloques con colores fijos (red/hotpink/gray) ahora son tokens opcionales `--game-red/-hotpink/-gray` (neón: #ff7a1a/#4f8bff/#ffd60a). Glow del motor = base × escala de `--game-glow` (≤10 lineal, >10 1+(g-10)/15). Build no ejecutado por dev server compartido -> ⚠️. Selector de skin es un `combobox "Skin"`.
+
+## Snake retro (2026-10-18)
+
+- Solo CSS: `[data-skin="retro"][data-game="snake"] { --game-glow-snake: 0 }` + `GAME_SKINS`. Sin build -> ⚠️. Fruta respaldo vs serpiente solo 2.1 de luminancia (distingue el tono). Sprites sin filtro.
+- Arkanoid retro (2026-10-18): override en [data-game=arkanoid] --green #b5e61d, red #c8321f, hotpink #ffe9a8, gray #a89878 (cyan==green en retro base). Build no ejecutado -> ⚠️.
