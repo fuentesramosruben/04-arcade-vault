@@ -112,10 +112,13 @@ export const PALETTE_VARS = {
   yellow: "--yellow",
   green: "--green",
   ink: "--ink",
+  red: "--game-red",
+  hotpink: "--game-hotpink",
+  gray: "--game-gray",
 } as const;
 export type ThemeKey = keyof typeof PALETTE_VARS;
 export type Palette = Record<BlockColor | "ink", string>;
-// Valores por defecto si faltan las variables del tema; red, hotpink y gray son fijos
+// Valores por defecto si faltan las variables (red, hotpink y gray usan tokens opcionales --game-*)
 export const DEFAULT_PALETTE: Palette = {
   red: "#ff3b3b",
   yellow: "#f5ff00",
@@ -128,3 +131,6 @@ export const DEFAULT_PALETTE: Palette = {
 };
 export const SOUND_BOUNCE = "/games/arkanoid/sounds/ball-bounce.mp3";
 export const SOUND_BREAK = "/games/arkanoid/sounds/break-sound.mp3";
+// Pala de la skin clásica: sprite de la hoja original (x, y, ancho, alto)
+export const SPRITESHEET = "/games/arkanoid/spritesheet-breakout.png";
+export const PADDLE_SPRITE = { sx: 32, sy: 112, sw: 162, sh: 14 } as const;

@@ -6,6 +6,7 @@ import type {
 } from "../types";
 import {
   DEFAULT_PALETTE,
+  GLOW_VARS,
   H,
   INITIAL_ASTEROIDS,
   INITIAL_LIVES,
@@ -42,12 +43,19 @@ function readPalette(canvas: HTMLCanvasElement): Palette {
   const style = getComputedStyle(canvas);
   const read = (cssVar: string, fallback: string) =>
     style.getPropertyValue(cssVar).trim() || fallback;
+  const readNum = (cssVar: string, fallback: number) => {
+    const n = parseFloat(style.getPropertyValue(cssVar));
+    return Number.isFinite(n) ? n : fallback;
+  };
   return {
-    ...DEFAULT_PALETTE,
     ship: read(PALETTE_VARS.ship, DEFAULT_PALETTE.ship),
     bullet: read(PALETTE_VARS.bullet, DEFAULT_PALETTE.bullet),
     asteroid: read(PALETTE_VARS.asteroid, DEFAULT_PALETTE.asteroid),
     powerUp: read(PALETTE_VARS.powerUp, DEFAULT_PALETTE.powerUp),
+    flame: read(PALETTE_VARS.flame, DEFAULT_PALETTE.flame),
+    bg: read(PALETTE_VARS.bg, DEFAULT_PALETTE.bg),
+    glow: readNum(GLOW_VARS.glow, DEFAULT_PALETTE.glow),
+    asteroidGlow: readNum(GLOW_VARS.asteroidGlow, DEFAULT_PALETTE.asteroidGlow),
   };
 }
 // No se previene el comportamiento por defecto si el foco está en un control
@@ -234,7 +242,7 @@ export const createAsteroidsEngine: GameEngineFactory = (
   }
   // ── Draw (sin HUD ni overlays: los pinta la plataforma) ────────────────────
   function draw() {
-    ctx!.fillStyle = "#000";
+    ctx!.fillStyle = palette.bg;
     ctx!.fillRect(0, 0, W, H);
     const c = ctx!;
     particles.forEach((p) => p.draw(c, palette));
@@ -319,6 +327,12 @@ export const createAsteroidsEngine: GameEngineFactory = (
       callbacks.onGameOver(score);
       // Si estaba en pausa se pinta un último fotograma estático
       if (paused) draw();
+    },
+    refreshPalette() {
+      if (destroyed) return;
+      palette = readPalette(canvas);
+      // En pausa o fin de partida no hay bucle: se repinta el fotograma
+      if (started && rafId === null) draw();
     },
     destroy() {
       destroyed = true;

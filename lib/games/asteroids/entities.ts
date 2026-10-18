@@ -29,7 +29,6 @@ export const rand = (min: number, max: number) =>
   min + Math.random() * (max - min);
 export const randInt = (min: number, max: number) =>
   Math.floor(rand(min, max + 1));
-const GLOW = 10;
 // ── Bullet ───────────────────────────────────────────────────────────────────
 export class Bullet {
   x: number;
@@ -55,7 +54,7 @@ export class Bullet {
     ctx.save();
     ctx.fillStyle = palette.bullet;
     ctx.shadowColor = palette.bullet;
-    ctx.shadowBlur = GLOW;
+    ctx.shadowBlur = palette.glow;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fill();
@@ -110,6 +109,10 @@ export class Asteroid {
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rot);
     ctx.strokeStyle = palette.asteroid;
+    if (palette.asteroidGlow > 0) {
+      ctx.shadowColor = palette.asteroid;
+      ctx.shadowBlur = palette.asteroidGlow;
+    }
     ctx.lineWidth = 1.5;
     ctx.lineJoin = "round";
     ctx.beginPath();
@@ -149,7 +152,7 @@ export class PowerUp {
     const pulse = 0.85 + Math.sin(now / 150) * 0.15;
     ctx.save();
     ctx.shadowColor = palette.powerUp;
-    ctx.shadowBlur = GLOW;
+    ctx.shadowBlur = palette.glow;
     ctx.strokeStyle = palette.powerUp;
     ctx.fillStyle = palette.powerUp;
     ctx.lineWidth = 2;
@@ -231,7 +234,7 @@ export class Ship {
     ctx.rotate(this.angle);
     ctx.strokeStyle = palette.ship;
     ctx.shadowColor = palette.ship;
-    ctx.shadowBlur = GLOW;
+    ctx.shadowBlur = palette.glow;
     ctx.lineWidth = 1.5;
     ctx.lineJoin = "round";
     // Silueta clásica: triángulo con muesca trasera
@@ -284,6 +287,10 @@ export class Particle {
     ctx.save();
     ctx.globalAlpha = Math.max(0, this.ttl / this.life);
     ctx.strokeStyle = palette.asteroid;
+    if (palette.asteroidGlow > 0) {
+      ctx.shadowColor = palette.asteroid;
+      ctx.shadowBlur = palette.asteroidGlow;
+    }
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(this.x, this.y);

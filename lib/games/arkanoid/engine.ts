@@ -22,6 +22,8 @@ import {
   PALETTE_VARS,
   SOUND_BOUNCE,
   SOUND_BREAK,
+  SPRITESHEET,
+  PADDLE_SPRITE,
   START_LIVES,
   W,
   type Palette,
@@ -37,14 +39,26 @@ import {
 } from "./entities";
 type State = "playing" | "gameover";
 const GAME_KEYS = new Set(["ArrowLeft", "ArrowRight"]);
-function readPalette(canvas: HTMLCanvasElement): Palette {
+interface Theme {
+  palette: Palette;
+  bg: string;
+  glow: number; // --game-glow (px, 10 = clásico)
+  paddleSprite: boolean; // --game-paddle-sprite: 1 solo en la skin clásica
+}
+function readTheme(canvas: HTMLCanvasElement): Theme {
   const style = getComputedStyle(canvas);
   const palette = { ...DEFAULT_PALETTE };
   for (const key of Object.keys(PALETTE_VARS) as ThemeKey[]) {
     palette[key] =
       style.getPropertyValue(PALETTE_VARS[key]).trim() || DEFAULT_PALETTE[key];
   }
-  return palette;
+  const glow = parseFloat(style.getPropertyValue("--game-glow"));
+  return {
+    palette,
+    bg: style.getPropertyValue("--game-bg").trim() || "#000",
+    glow: Number.isFinite(glow) ? glow : 10,
+    paddleSprite: style.getPropertyValue("--game-paddle-sprite").trim() === "1",
+  };
 }
 // No se previene el comportamiento por defecto si el foco está en un control
 function isInteractive(target: EventTarget | null) {
@@ -62,6 +76,19 @@ export const createArkanoidEngine: GameEngineFactory = (
   const ctx: CanvasRenderingContext2D = context;
   // ── Estado de la instancia ─────────────────────────────────────────────────
   let palette: Palette = DEFAULT_PALETTE;
+  let bg = "#000";
+  let glowScale = 1; // multiplica los shadowBlur base (clásico = 1)
+  let paddleSprite = false;
+  let spriteImg: HTMLImageElement | null = null;
+  let blockGlow = 0; // resplandor de los bloques (solo skins con glow alto)
+  function applyTheme() {
+    const theme = readTheme(canvas);
+    palette = theme.palette;
+    bg = theme.bg;
+    paddleSprite = theme.paddleSprite;
+    glowScale = theme.glow <= 10 ? theme.glow / 10 : 1 + (theme.glow - 10) / 15;
+    blockGlow = theme.glow > 10 ? (theme.glow - 10) * 0.3 : 0;
+  }
   const paddle: Rect = { x: 0, y: PADDLE_Y, w: PADDLE_W, h: PADDLE_H };
   const ball: Ball = { x: 0, y: 0, w: BALL_SIZE, h: BALL_SIZE, vx: 0, vy: 0 };
   let blocks: Block[] = [];
@@ -221,16 +248,21 @@ export const createArkanoidEngine: GameEngineFactory = (
   }
   // ── Draw (sin HUD ni overlays: los pinta la plataforma) ────────────────────
   function draw() {
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
     // Bloques: relleno simple, sin brillo
     for (const b of blocks) {
       if (!b.alive) continue;
+      ctx.save();
       ctx.fillStyle = palette[b.color];
       ctx.globalAlpha = 0.9;
+      if (blockGlow > 0) {
+        ctx.shadowColor = palette[b.color];
+        ctx.shadowBlur = blockGlow;
+      }
       ctx.fillRect(b.x + 1, b.y + 1, b.w - 2, b.h - 2);
+      ctx.restore();
     }
-    ctx.globalAlpha = 1;
     // Explosiones: el bloque se expande y se desvanece
     for (const exp of explosions) {
       const t = Math.min(exp.elapsed / EXPLOSION_MS, 1);
@@ -239,7 +271,7 @@ export const createArkanoidEngine: GameEngineFactory = (
       ctx.globalAlpha = 1 - t;
       ctx.fillStyle = palette[exp.color];
       ctx.shadowColor = palette[exp.color];
-      ctx.shadowBlur = 16;
+      ctx.shadowBlur = 16 * glowScale;
       ctx.fillRect(
         exp.x - grow,
         exp.y - grow / 2,
@@ -249,17 +281,22 @@ export const createArkanoidEngine: GameEngineFactory = (
       ctx.restore();
     }
     // Pala
-    ctx.save();
-    ctx.fillStyle = palette.cyan;
-    ctx.shadowColor = palette.cyan;
-    ctx.shadowBlur = 14;
-    ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
-    ctx.restore();
+    if (paddleSprite && spriteImg?.complete && spriteImg.naturalWidth > 0) {
+      const p = PADDLE_SPRITE;
+      ctx.drawImage(spriteImg, p.sx, p.sy, p.sw, p.sh, paddle.x, paddle.y, paddle.w, paddle.h);
+    } else {
+      ctx.save();
+      ctx.fillStyle = palette.cyan;
+      ctx.shadowColor = palette.cyan;
+      ctx.shadowBlur = 14 * glowScale;
+      ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+      ctx.restore();
+    }
     // Pelota
     ctx.save();
     ctx.fillStyle = palette.ink;
     ctx.shadowColor = palette.ink;
-    ctx.shadowBlur = 12;
+    ctx.shadowBlur = 12 * glowScale;
     ctx.fillRect(ball.x, ball.y, ball.w, ball.h);
     ctx.restore();
   }
@@ -312,11 +349,13 @@ export const createArkanoidEngine: GameEngineFactory = (
     start() {
       if (started || destroyed) return;
       started = true;
-      palette = readPalette(canvas);
+      applyTheme();
       canvas.width = W;
       canvas.height = H;
       bounceSound = new Audio(SOUND_BOUNCE);
       breakSound = new Audio(SOUND_BREAK);
+      spriteImg = new Image();
+      spriteImg.src = SPRITESHEET;
       window.addEventListener("keydown", onKeyDown);
       window.addEventListener("keyup", onKeyUp);
       window.addEventListener("blur", clearInput);
@@ -350,8 +389,15 @@ export const createArkanoidEngine: GameEngineFactory = (
       // El bucle se detiene solo; si estaba en pausa se pinta un último fotograma
       if (paused) draw();
     },
+    refreshPalette() {
+      if (destroyed) return;
+      applyTheme();
+      // En pausa o fin de partida no hay bucle: se repinta el fotograma
+      if (started && rafId === null) draw();
+    },
     destroy() {
       destroyed = true;
+      spriteImg = null;
       stopLoop();
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
