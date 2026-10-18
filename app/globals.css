@@ -1240,6 +1240,142 @@
     background: var(--green);
     box-shadow: 0 0 6px var(--green);
   }
+  /* Controles táctiles (SPEC 10): panel bajo el marco CRT, solo con puntero grueso */
+  .touch-controls {
+    display: none;
+    --touch-accent: var(--cyan);
+    --touch-accent-rgb: 0, 245, 255;
+    margin: 22px auto 0;
+    width: 100%;
+    max-width: 440px;
+    gap: 6px;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @media (pointer: coarse) {
+    .touch-controls {
+      display: grid;
+    }
+  }
+  /* Pausa o game over: mantiene el hueco pero no recibe toques */
+  .touch-controls[data-active="false"] {
+    visibility: hidden;
+  }
+  .touch-controls[data-game="asteroides"] {
+    grid-template-columns:
+      repeat(2, minmax(48px, 1fr)) 14px minmax(48px, 1fr)
+      minmax(72px, 1.5fr);
+    grid-template-areas: "left right . up action";
+  }
+  .touch-controls[data-game="tetris"] {
+    grid-template-columns:
+      repeat(3, minmax(48px, 1fr)) 14px minmax(48px, 1fr)
+      minmax(64px, 1.4fr);
+    grid-template-areas: "left down right . up action";
+  }
+  .touch-controls[data-game="arkanoid"] {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: "left right";
+  }
+  .touch-controls[data-game="snake"] {
+    grid-template-columns: repeat(3, minmax(56px, 76px));
+    grid-template-areas:
+      ". up ."
+      "left down right";
+    justify-content: center;
+  }
+  .touch-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    min-height: 60px;
+    padding: 0;
+    font-family: var(--pixel);
+    font-size: 18px;
+    line-height: 1;
+    color: var(--touch-accent);
+    background: var(--bg-2);
+    border: 1px solid var(--touch-accent);
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      transform 60ms ease,
+      background-color 100ms,
+      box-shadow 100ms;
+    clip-path: polygon(
+      8px 0,
+      100% 0,
+      100% calc(100% - 8px),
+      calc(100% - 8px) 100%,
+      0 100%,
+      0 8px
+    );
+  }
+  .touch-btn[data-area="left"] {
+    grid-area: left;
+  }
+  .touch-btn[data-area="right"] {
+    grid-area: right;
+  }
+  .touch-btn[data-area="up"] {
+    grid-area: up;
+  }
+  .touch-btn[data-area="down"] {
+    grid-area: down;
+  }
+  .touch-btn[data-area="action"] {
+    grid-area: action;
+  }
+  .touch-btn::before {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border: 1px solid rgba(var(--touch-accent-rgb), 0.25);
+    pointer-events: none;
+    clip-path: inherit;
+  }
+  .touch-btn:active {
+    transform: scale(0.95);
+    background: rgba(var(--touch-accent-rgb), 0.22);
+    box-shadow: inset 0 0 14px rgba(var(--touch-accent-rgb), 0.55);
+  }
+  /* Acciones: pulsadores redondeados, magenta (disparo, caída) y amarillo (propulsar, rotar) */
+  .touch-btn[data-area="action"],
+  .touch-controls:not([data-game="snake"]) .touch-btn[data-area="up"] {
+    clip-path: none;
+    border-radius: 999px;
+    border-width: 2px;
+  }
+  .touch-btn[data-area="action"]::before,
+  .touch-controls:not([data-game="snake"]) .touch-btn[data-area="up"]::before {
+    border-radius: 999px;
+    clip-path: none;
+  }
+  .touch-btn[data-area="action"] {
+    --touch-accent: var(--magenta);
+    --touch-accent-rgb: 255, 0, 110;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .touch-controls:not([data-game="snake"]) .touch-btn[data-area="up"] {
+    --touch-accent: var(--yellow);
+    --touch-accent-rgb: 245, 255, 0;
+  }
+  .touch-btn[data-area="action"]:active,
+  .touch-controls:not([data-game="snake"]) .touch-btn[data-area="up"]:active {
+    box-shadow:
+      0 0 16px rgba(var(--touch-accent-rgb), 0.6),
+      inset 0 0 14px rgba(var(--touch-accent-rgb), 0.55);
+  }
   /* fake in-screen game */
   .game-arena {
     position: absolute;
