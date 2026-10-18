@@ -60,19 +60,16 @@ export const FEATURES: Feature[] = [
 ];
 
 export const HOME_STATS: HomeStat[] = [
-  { n: "12+", unit: "JUEGOS", sub: "Y CONTANDO" },
+  { n: "4", unit: "JUEGOS", sub: "Y CONTANDO" },
   { n: "MILES", unit: "DE PARTIDAS", sub: "JUGADAS CADA DÍA" },
   { n: "GLOBAL", unit: "RANKING", sub: "COMPITE CON EL MUNDO" },
 ];
 
 export const RECENT_SCORES: RecentScore[] = [
-  { player: "NEONFOX", game: "Caída", score: 184220, ago: "hace 2 min", color: "magenta" },
-  { player: "PX_KAI", game: "Glotón", score: 96400, ago: "hace 5 min", color: "yellow" },
-  { player: "Z3R0COOL", game: "Invasores", score: 54190, ago: "hace 8 min", color: "green" },
-  { player: "VAULT_07", game: "Rocas", score: 41200, ago: "hace 12 min", color: "cyan" },
-  { player: "GLITCHA", game: "Bloque Buster", score: 28450, ago: "hace 18 min", color: "cyan" },
-  { player: "ARKADYA", game: "Serpentina", score: 7820, ago: "hace 24 min", color: "green" },
-  { player: "CYBER_LU", game: "Ranaria", score: 18900, ago: "hace 31 min", color: "yellow" },
+  { player: "NEONFOX", game: "Tetris", score: 184220, ago: "hace 2 min", color: "yellow" },
+  { player: "PX_KAI", game: "Arkanoid", score: 96400, ago: "hace 5 min", color: "magenta" },
+  { player: "VAULT_07", game: "Asteroides", score: 41200, ago: "hace 12 min", color: "cyan" },
+  { player: "ARKADYA", game: "Snake", score: 7820, ago: "hace 24 min", color: "green" },
 ];
 
 export const TOP_PLAYERS: TopPlayer[] = [
