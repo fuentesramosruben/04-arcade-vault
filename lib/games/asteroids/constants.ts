@@ -31,6 +31,9 @@ export interface Palette {
   asteroid: string;
   powerUp: string;
   flame: string;
+  bg: string;
+  glow: number; // shadowBlur de nave, bala y power-up
+  asteroidGlow: number; // shadowBlur de asteroides y partículas
 }
 // Valores por defecto si faltan las variables CSS del tema
 export const DEFAULT_PALETTE: Palette = {
@@ -39,6 +42,9 @@ export const DEFAULT_PALETTE: Palette = {
   asteroid: "#e6e9ff",
   powerUp: "#ff006e",
   flame: "rgba(255, 130, 0, 0.85)",
+  bg: "#000",
+  glow: 10,
+  asteroidGlow: 0,
 };
 // Variables CSS del tema de las que se derivan los colores
 export const PALETTE_VARS = {
@@ -46,4 +52,11 @@ export const PALETTE_VARS = {
   bullet: "--yellow",
   asteroid: "--ink",
   powerUp: "--magenta",
+  flame: "--game-flame",
+  bg: "--game-bg",
+} as const;
+// Tokens numéricos (px, sin unidad)
+export const GLOW_VARS = {
+  glow: "--game-glow",
+  asteroidGlow: "--game-glow-asteroid",
 } as const;

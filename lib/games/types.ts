@@ -15,6 +15,7 @@ export interface GameEngine {
   restart(): void; // nueva partida: score 0, 3 vidas, nivel 1
   end(): void; // termina la partida con la puntuación actual (botón FIN)
   destroy(): void; // cancela requestAnimationFrame y quita listeners
+  refreshPalette?(): void; // opcional: relee los tokens CSS del tema (cambio de skin) sin reiniciar
 }
 export type GameEngineFactory = (
   canvas: HTMLCanvasElement,

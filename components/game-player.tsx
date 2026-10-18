@@ -5,6 +5,14 @@ import { GameCanvas, type GameCanvasHandle } from "@/components/game-canvas";
 import { useSession } from "@/components/session-provider";
 import type { Game } from "@/lib/games";
 import { ENGINES, getEngineMeta } from "@/lib/games/registry";
+import {
+  DEFAULT_SKIN,
+  SKIN_LABELS,
+  getGameSkins,
+  getStoredSkin,
+  storeSkin,
+  type SkinId,
+} from "@/lib/games/skins";
 import type { GameStats } from "@/lib/games/types";
 import { createClient } from "@/lib/supabase/client";
 const LIVES = 3;
@@ -75,6 +83,21 @@ export function GamePlayer({ game }: { game: Game }) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [skin, setSkin] = useState<SkinId>(DEFAULT_SKIN);
+  const skins = getGameSkins(game.id);
+  // La skin guardada se lee tras montar para no desajustar la hidratación
+  useEffect(() => {
+    if (!hasEngine) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSkin(getStoredSkin(game.id));
+  }, [hasEngine, game.id]);
+  const chooseSkin = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const s = e.target.value as SkinId;
+    // Se desenfoca para que Espacio/flechas no cambien la skin durante la partida
+    e.target.blur();
+    setSkin(s);
+    storeSkin(game.id, s);
+  };
   const name = editedName ?? user?.name ?? "INVITADO";
   // Con motor el nombre se normaliza como exige el CHECK de la tabla scores
   const cleanName = name.trim().toUpperCase().slice(0, MAX_NAME).trim();
@@ -196,6 +219,20 @@ export function GamePlayer({ game }: { game: Game }) {
           </div>
         </div>
         <div className="hud-actions">
+          {hasEngine && skins.length > 1 && (
+            <select
+              className="btn skin-select"
+              aria-label="Skin"
+              value={skin}
+              onChange={chooseSkin}
+            >
+              {skins.map((s) => (
+                <option key={s} value={s}>
+                  {SKIN_LABELS[s]}
+                </option>
+              ))}
+            </select>
+          )}
           <button className="btn yellow" onClick={togglePause}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
@@ -207,7 +244,12 @@ export function GamePlayer({ game }: { game: Game }) {
           </Link>
         </div>
       </div>
-      <div className="crt" style={crtStyle}>
+      <div
+        className="crt"
+        style={crtStyle}
+        data-skin={skin}
+        data-game={game.id}
+      >
         <div className="crt-screen" style={screenStyle}>
           {hasEngine ? (
             <GameCanvas
@@ -215,6 +257,7 @@ export function GamePlayer({ game }: { game: Game }) {
               gameId={game.id}
               paused={paused}
               runKey={runKey}
+              skin={skin}
               onStats={setStats}
               onGameOver={handleGameOver}
             />

@@ -10,6 +10,8 @@ interface GameCanvasProps {
   paused: boolean;
   // al cambiar, se inicia una partida nueva
   runKey: number;
+  // skin activa (el atributo data-skin lo pone GamePlayer); un cambio dispara refreshPalette
+  skin?: string;
   onStats(stats: GameStats): void;
   onGameOver(finalScore: number): void;
   ref?: React.Ref<GameCanvasHandle>;
@@ -19,6 +21,7 @@ export function GameCanvas({
   gameId,
   paused,
   runKey,
+  skin,
   onStats,
   onGameOver,
   ref,
@@ -57,6 +60,10 @@ export function GameCanvas({
     runKeyRef.current = runKey;
     engineRef.current?.restart();
   }, [runKey]);
+  // Al cambiar de skin el motor relee los tokens del tema sin reiniciar la partida
+  useEffect(() => {
+    engineRef.current?.refreshPalette?.();
+  }, [skin]);
   useImperativeHandle(ref, () => ({
     end: () => engineRef.current?.end(),
   }));

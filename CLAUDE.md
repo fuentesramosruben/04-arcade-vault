@@ -34,6 +34,8 @@ Subagente `game-jam` (`.claude/agents/game-jam.md`): recibe un tema, elige un ju
 
 Subagente `skin-designer` (`.claude/agents/skin-designer.md`): aplica una skin (clásico por defecto, neón, retro o pastel) a un juego con motor, **un juego y una skin por ejecución**, los que indique el usuario (`@skin-designer <juego-id> <skin>`). Comprueba contraste sobre fondo oscuro, implementa el código (tokens CSS por `data-skin`, motor, selector en el reproductor) y actualiza `references/game-with-themes.md`, la matriz juego × skin. Memoria en `.claude/agent-memory/skin-designer/`.
 
+**Skins (arquitectura)**: `lib/games/skins.ts` (`SKINS`, `GAME_SKINS` con las skins implementadas por juego, `getStoredSkin`/`storeSkin` sobre `localStorage` `av_skin_<id>`). `GamePlayer` muestra un selector en la HUD si el juego tiene más de una skin y pone `data-skin`/`data-game` en `.crt`; la paleta de cada skin vive en `app/globals.css` como `.crt[data-skin="<skin>"]` (tokens `--cyan`, `--magenta`, `--yellow`, `--ink`, `--game-bg`, `--game-glow`, `--game-glow-asteroid`, `--game-flame`). Extensión opcional del contrato: `GameEngine.refreshPalette?()`, que `GameCanvas` llama al cambiar la prop `skin` sin reiniciar la partida. Los motores leen el fondo de `--game-bg` en lugar de `"#000"` (migrado solo en asteroides por ahora). Progreso en `references/game-with-themes.md`.
+
 ## Hooks y MCP
 
 - `.claude/settings.json` define un hook `PostToolUse` (`Write|Edit`) que ejecuta `.claude/hooks/format-lint.mjs`: quita líneas en blanco y espacios finales en JS/TS/CSS, pasa Prettier y ESLint `--fix`, y falla (exit 2) si ESLint deja errores.
