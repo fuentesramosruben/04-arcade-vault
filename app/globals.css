@@ -317,7 +317,8 @@
   .av-nav .hamburger {
     display: none;
   }
-  @media (max-width: 840px) {
+  /* En móvil horizontal (hasta ~930 px) el menú de escritorio no cabe: hamburguesa */
+  @media (max-width: 840px), (pointer: coarse) and (max-width: 940px) {
     .av-nav {
       padding: 12px 16px;
     }
@@ -1096,9 +1097,54 @@
     color: var(--yellow);
     text-shadow: 0 0 6px rgba(245, 255, 0, 0.5);
   }
+  .hud-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
   .hud-actions {
     display: flex;
     gap: 10px;
+  }
+  /* Móvil: HUD compacto en dos filas, con botones que reparten el ancho */
+  @media (max-width: 520px) {
+    .av-player {
+      margin: 16px auto;
+      padding: 0 16px 32px;
+    }
+    .player-hud {
+      padding: 12px 14px;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .hud-stats {
+      gap: 8px 18px;
+    }
+    .hud-stat .v {
+      font-size: 13px;
+    }
+    .hud-actions {
+      width: 100%;
+      gap: 6px;
+    }
+    .hud-actions .btn {
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 44px;
+      padding: 12px 8px;
+    }
+    .hud-actions .btn.skin-select {
+      padding-right: 28px;
+      background-position:
+        calc(100% - 14px) 50%,
+        calc(100% - 9px) 50%;
+    }
+  }
+  /* Táctil: el marco de tetris deja sitio al panel de controles bajo él */
+  @media (pointer: coarse) {
+    .av-player {
+      --crt-reserve: 430px;
+    }
   }
   .crt {
     position: relative;
@@ -1520,6 +1566,29 @@
     justify-content: center;
     margin-top: 18px;
     flex-wrap: wrap;
+  }
+  /* Móvil: el modal cabe en 360 px y el campo de nombre no hace zoom en iOS */
+  @media (max-width: 520px) {
+    .modal {
+      padding: 24px 16px;
+    }
+    .modal h2 {
+      font-size: 18px;
+    }
+    .modal .final {
+      font-size: 30px;
+    }
+    .modal .input-row {
+      flex-wrap: wrap;
+    }
+    .modal .input-row input {
+      flex: 1 1 100%;
+      min-width: 0;
+      font-size: 16px;
+    }
+    .modal .input-row .btn {
+      flex: 1 1 100%;
+    }
   }
   .toast-saved {
     font-family: var(--pixel);

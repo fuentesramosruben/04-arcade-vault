@@ -1,6 +1,6 @@
 # SPEC 10 — Controles táctiles para jugar en móvil
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 05, SPEC 07, SPEC 08, SPEC 09
 > **Date:** 2026-10-18
 > **Objective:** Permitir jugar a los 4 juegos con motor (asteroides, tetris, arkanoid y snake) en una pantalla táctil mediante botones virtuales bajo el canvas que reutilizan los controles de teclado de los motores, sin modificarlos.
