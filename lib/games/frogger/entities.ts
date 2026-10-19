@@ -2,6 +2,11 @@ import {
   COLS,
   LANE_LOOP,
   LEVEL_SPEED_FACTOR,
+  MIN_ROUND_TIME_MS,
+  ROUND_TIME_MS,
+  ROUND_TIME_STEP_MS,
+  ROW_RIVER_BOT,
+  ROW_RIVER_TOP,
   TURTLE_SUBMERGED_MS,
   TURTLE_VISIBLE_MS,
 } from "./constants";
@@ -92,4 +97,49 @@ export interface Frog {
   animT: number;
   targetCol: number;
   targetRow: number;
+}
+export function roundTimeFor(level: number): number {
+  return Math.max(
+    MIN_ROUND_TIME_MS,
+    ROUND_TIME_MS - (level - 1) * ROUND_TIME_STEP_MS,
+  );
+}
+export function isRiverRow(row: number): boolean {
+  return row >= ROW_RIVER_TOP && row <= ROW_RIVER_BOT;
+}
+export function laneAt(lanes: Lane[], row: number): Lane | undefined {
+  return lanes.find((lane) => lane.row === row);
+}
+// Entidad del río que sostiene a la rana (por su centro), o null. Una tortuga
+// sumergida no sostiene.
+export function getSupport(frog: Frog, lanes: Lane[]): Entity | null {
+  const lane = laneAt(lanes, frog.row);
+  if (!lane || !isRiverRow(frog.row)) return null;
+  const center = frog.col + 0.5;
+  for (const entity of lane.entities) {
+    if (entity.submerged) continue;
+    if (center >= entity.col && center < entity.col + entity.width) {
+      return entity;
+    }
+  }
+  return null;
+}
+// Mueve las entidades de cada carril y avanza el ciclo de las tortugas. Una
+// entidad que sale por un borde reaparece LANE_LOOP celdas atrás, fuera de pantalla.
+export function advanceLanes(lanes: Lane[], dtMs: number): void {
+  const cycle = TURTLE_VISIBLE_MS + TURTLE_SUBMERGED_MS;
+  for (const lane of lanes) {
+    const delta = (lane.speed * lane.dir * dtMs) / 1000;
+    for (const entity of lane.entities) {
+      entity.col += delta;
+      if (lane.dir === 1 && entity.col >= COLS) entity.col -= LANE_LOOP;
+      if (lane.dir === -1 && entity.col + entity.width <= 0) {
+        entity.col += LANE_LOOP;
+      }
+      if (entity.type === "turtle") {
+        entity.phase = ((entity.phase ?? 0) + dtMs) % cycle;
+        entity.submerged = entity.phase >= TURTLE_VISIBLE_MS;
+      }
+    }
+  }
 }
