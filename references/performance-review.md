@@ -105,3 +105,13 @@ Comprobación con `build` + `start` (escritorio, 15 s con teclas sintéticas a 5
 | snake    | 0                    | 0                    | 0                  |
 
 `GameCanvas` ya no se re-renderiza cuando cambian solo las estadísticas. Pausa (`P`) y cambio de skin siguen funcionando sin reiniciar la partida.
+
+## Capas CSS (paso 4)
+
+Cambio: `GamePlayer` con motor pone `data-playing` en `<html>` (efecto con cleanup) y `app/globals.css` añade reglas `html[data-playing]`: sin animación `gridscroll` en `.av-bg::before`, `mix-blend-mode: normal` en `.av-bg::after` y `.crt-screen::after` (multiply con negro equivale a negro con alfa fija, sin cambio de color) y `.av-noise` oculto.
+
+Comprobación con `build` + `start`:
+
+- `data-playing`: presente en `/juegos/frogger/jugar`; ausente en `/`, `/juegos` y `/salon`; tras pulsar SALIR desde `/juegos/snake/jugar` se retira. Sin errores de consola.
+- Capturas de `/juegos/frogger/jugar` antes y después (animaciones en pausa): iguales salvo la posición de las entidades del juego. `/`, `/juegos` y `/salon` no cambian: las reglas solo aplican con `data-playing`.
+- Frogger, móvil 390 × 844, CPU ×8, 10 s, 3 ejecuciones: `task %` 35.7 / 38.7 / 31.6 (mediana 35.7) frente a 47.6 de la base; `style %` 0 frente a 3.9. Mejora ≈ −12 puntos (−25 %).

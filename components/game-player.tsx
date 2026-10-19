@@ -99,6 +99,15 @@ export function GamePlayer({ game }: { game: Game }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSkin(getStoredSkin(game.id));
   }, [hasEngine, game.id]);
+  // Marca <html> mientras se juega para simplificar las capas CSS (app/globals.css)
+  useEffect(() => {
+    if (!hasEngine) return;
+    const root = document.documentElement;
+    root.dataset.playing = "";
+    return () => {
+      delete root.dataset.playing;
+    };
+  }, [hasEngine]);
   const chooseSkin = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const s = e.target.value as SkinId;
     // Se desenfoca para que Espacio/flechas no cambien la skin durante la partida
