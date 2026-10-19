@@ -18,6 +18,7 @@ export const GOAL_WIDTH = 2;
 export const GOAL_STARTS = [1, 4, 7, 10, 13] as const;
 export const LIVES = 3;
 export const JUMP_MS = 120;
+export const HITBOX_MARGIN = 0.15; // celdas recortadas a cada lado de la rana
 export const MAX_DT = 50; // ms
 // Tiempo de ronda (ms), reducido en niveles altos
 export const ROUND_TIME_MS = 15000;

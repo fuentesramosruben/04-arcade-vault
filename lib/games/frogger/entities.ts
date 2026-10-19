@@ -1,12 +1,18 @@
 import {
   COLS,
+  GOAL_STARTS,
+  GOAL_WIDTH,
+  HITBOX_MARGIN,
   LANE_LOOP,
   LEVEL_SPEED_FACTOR,
   MIN_ROUND_TIME_MS,
   ROUND_TIME_MS,
   ROUND_TIME_STEP_MS,
+  ROW_GOALS,
   ROW_RIVER_BOT,
   ROW_RIVER_TOP,
+  ROW_ROAD_BOT,
+  ROW_ROAD_TOP,
   TURTLE_SUBMERGED_MS,
   TURTLE_VISIBLE_MS,
 } from "./constants";
@@ -123,6 +129,38 @@ export function getSupport(frog: Frog, lanes: Lane[]): Entity | null {
     }
   }
   return null;
+}
+// Vehículo que toca a la rana en su fila (hitbox algo más estrecha que la celda)
+export function checkRoadCollision(frog: Frog, lanes: Lane[]): boolean {
+  if (frog.row < ROW_ROAD_TOP || frog.row > ROW_ROAD_BOT) return false;
+  const lane = laneAt(lanes, frog.row);
+  if (!lane) return false;
+  const left = frog.col + HITBOX_MARGIN;
+  const right = frog.col + 1 - HITBOX_MARGIN;
+  return lane.entities.some(
+    (entity) => left < entity.col + entity.width && right > entity.col,
+  );
+}
+// Rana quieta en el río sin tronco ni tortuga visible debajo
+export function isInWater(frog: Frog, lanes: Lane[]): boolean {
+  return (
+    !frog.animating && isRiverRow(frog.row) && getSupport(frog, lanes) === null
+  );
+}
+// El río arrastró a la rana fuera de la rejilla (su centro pasó un borde lateral)
+export function isOffScreen(frog: Frog): boolean {
+  const center = frog.col + 0.5;
+  return center < 0 || center > COLS;
+}
+// Índice de la boca libre bajo la rana, o -1 si no está en una boca o ya
+// está ocupada (en ambos casos la rana muere)
+export function checkGoal(frog: Frog, goals: boolean[]): number {
+  if (frog.row !== ROW_GOALS) return -1;
+  const center = frog.col + 0.5;
+  const index = GOAL_STARTS.findIndex(
+    (start) => center >= start && center < start + GOAL_WIDTH,
+  );
+  return index !== -1 && !goals[index] ? index : -1;
 }
 // Mueve las entidades de cada carril y avanza el ciclo de las tortugas. Una
 // entidad que sale por un borde reaparece LANE_LOOP celdas atrás, fuera de pantalla.
