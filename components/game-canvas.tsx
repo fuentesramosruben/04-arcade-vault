@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useImperativeHandle, useRef } from "react";
+import { memo, useEffect, useImperativeHandle, useRef } from "react";
 import { usePerfRenders } from "@/lib/perf";
 import { ENGINES, getEngineMeta } from "@/lib/games/registry";
 import type { GameEngine, GameStats } from "@/lib/games/types";
@@ -18,7 +18,8 @@ interface GameCanvasProps {
   ref?: React.Ref<GameCanvasHandle>;
 }
 // El tamaño lógico viene de ENGINE_META (800×600 por defecto); el CSS lo escala al marco del CRT.
-export function GameCanvas({
+// memo: un cambio de stats en GamePlayer no debe re-renderizar el canvas (SPEC 11)
+export const GameCanvas = memo(function GameCanvas({
   gameId,
   paused,
   runKey,
@@ -78,4 +79,4 @@ export function GameCanvas({
       aria-label="Pantalla del juego"
     />
   );
-}
+});

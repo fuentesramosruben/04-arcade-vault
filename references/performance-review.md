@@ -68,3 +68,40 @@ Lectura:
 - **JS de los motores:** < 0.1 ms por fotograma a ×1 y < 0.8 ms a ×8 (el 5 % del presupuesto de 16.7 ms). Frogger es el más caro (≈2× el resto) pero lejos de ser un cuello de botella.
 - **Hilo principal:** a ×8 Frogger ocupa el 47 % y el resto un 23–37 %; `script` + `style` explican solo ≈17 % en Frogger, así que ≈30 % es pintado/composición del hilo principal, común a todos los juegos (capas CSS, no el motor).
 - **Sin tirones reproducibles:** incluso a ×8 se mantienen ~143 fps y p95 = 7 ms. Los picos de `frameMaxMs` (20–140 ms) son aislados, aparecen en todos los juegos al azar y no se pueden atribuir al código. Si el tirón del usuario es real, es de GPU/composición (los `mix-blend-mode` de `.av-bg`, `.av-noise` y `.crt-screen::after`), que esta emulación en software no refleja bien.
+
+## Atribución del coste de Frogger (paso 2)
+
+A/B sin tocar el código: móvil 390 × 844, CPU ×8, `/juegos/frogger/jugar`, 3 ejecuciones de 10 s por variante (contexto nuevo en cada una). Las capas se desactivan inyectando CSS (`display: none !important`); `shadowBlur` se anula sustituyendo el setter de `CanvasRenderingContext2D.prototype` con un script de inicio. `task %` = hilo principal ocupado (CDP `TaskDuration`), mediana. fps y p95 no cambian en ninguna variante (≈144 / 7 ms).
+
+| Variante                                   | task % | Δ task | style % | script % |
+| ------------------------------------------ | ------ | ------ | ------- | -------- |
+| base                                       | 47.6   | —      | 3.9     | 14.0     |
+| sin `.av-bg`                               | 32.0   | −15.6  | 0.0     | 12.9     |
+| sin `.av-noise`                            | 46.2   | −1.4   | 4.0     | 13.4     |
+| sin `.crt-screen::after` (multiply)        | 42.9   | −4.7   | 3.2     | 13.8     |
+| sin `.crt-screen::before` (viñeta)         | 41.8   | −5.8   | 3.3     | 11.7     |
+| sin `shadowBlur`                           | 42.4   | −5.2   | 3.2     | 13.6     |
+| todo apagado (bg, noise, ::before/::after, shadow) | 34.1 | −13.5 | 0.0 | 14.7 |
+
+Conclusiones:
+
+- **Causa principal: `.av-bg`** (rejilla con `gridscroll`, `mask-image` y `mix-blend-mode`): −15.6 puntos de hilo principal (−33 %) y el `style %` cae a 0. Es una animación que se recalcula en cada fotograma detrás del canvas. Justifica el paso 4 (detenerla durante la partida).
+- **`.crt-screen::after`, `::before` y `shadowBlur`:** ≈ −5 puntos cada uno, dentro del ruido entre ejecuciones (una de las tres de `noAfter` y de `noShadow` sale a 52/49). Efecto pequeño y no demostrado por separado.
+- **`.av-noise`:** −1.4, sin efecto apreciable.
+- **No son aditivos:** "todo apagado" (34.1) no mejora a "sin `.av-bg`" (32.0); una vez parada la rejilla, el resto no aporta de forma medible.
+- **Re-renders:** `playerRenders` = 1 en una partida de 20 s (paso 1 y medición endurecida), así que la hipótesis queda **descartada**. El paso 3 solo se justifica por `GameCanvas`, que se re-renderiza con cada commit de `GamePlayer`, y por el resto de `stats`.
+- **Canvas (`shadowBlur`, fondo estático):** apoyo débil (≈ −5 puntos, dentro del ruido). El paso 5 no está respaldado con estos datos por encima de lo que hace el CSS.
+
+## Re-renders (paso 3, versión mínima)
+
+Cambio: `GameCanvas` envuelto en `memo` y `handleGameOver` con `useCallback` (`onStats={setStats}` ya era estable). No se separa el HUD en `game-hud.tsx`: con 0–1 commits por partida de 20 s no hay ganancia medible (ver Decisiones del spec: no memoizar por costumbre).
+
+Comprobación con `build` + `start` (escritorio, 15 s con teclas sintéticas a 5 Hz):
+
+| Juego    | renders `GamePlayer` | renders `GameCanvas` | HUD final (puntos) |
+| -------- | -------------------- | -------------------- | ------------------ |
+| arkanoid | 9                    | 0 (antes: 9)         | 70                 |
+| frogger  | 5                    | 0                    | 50                 |
+| snake    | 0                    | 0                    | 0                  |
+
+`GameCanvas` ya no se re-renderiza cuando cambian solo las estadísticas. Pausa (`P`) y cambio de skin siguen funcionando sin reiniciar la partida.

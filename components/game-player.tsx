@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { GameCanvas, type GameCanvasHandle } from "@/components/game-canvas";
 import { useSession } from "@/components/session-provider";
@@ -158,11 +158,12 @@ export function GamePlayer({ game }: { game: Game }) {
     setSaveError(false);
     setRunKey((k) => k + 1);
   };
-  const handleGameOver = (finalScore: number) => {
+  // Referencia estable (solo usa setters) para que memo(GameCanvas) no se invalide
+  const handleGameOver = useCallback((finalScore: number) => {
     setStats((s) => ({ ...s, score: finalScore }));
     setPaused(false);
     setOver(true);
-  };
+  }, []);
   // Se quita el foco al pulsar un botón: si no, Espacio lo reactivaría mientras se juega
   const togglePause = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.blur();
