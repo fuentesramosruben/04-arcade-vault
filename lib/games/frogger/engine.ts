@@ -13,6 +13,7 @@ import {
   DEFAULT_COLORS,
   DEFAULT_GLOW,
   GLOW_VAR,
+  GOAL_POINTS,
   GOAL_STARTS,
   GOAL_WIDTH,
   H,
@@ -21,6 +22,7 @@ import {
   MAX_DT,
   ROUND_POINTS,
   ROWS,
+  ROW_POINTS,
   ROW_GOALS,
   ROW_RIVER_BOT,
   ROW_RIVER_TOP,
@@ -28,6 +30,7 @@ import {
   ROW_ROAD_TOP,
   ROW_START,
   START_COL,
+  TIME_BONUS_PER_SECOND,
   W,
   type ColorKey,
   type Colors,
@@ -35,7 +38,11 @@ import {
 import {
   advanceLanes,
   buildLanes,
+  checkGoal,
+  checkRoadCollision,
   getSupport,
+  isInWater,
+  isOffScreen,
   isRiverRow,
   laneAt,
   roundTimeFor,
@@ -112,6 +119,7 @@ export const createFroggerEngine: GameEngineFactory = (
   let facing: Direction = "up";
   let pendingDir: Direction | null = null;
   let goals: boolean[] = [];
+  let bestRow = ROW_START; // fila más alta alcanzada por la rana actual
   let timeLeft = 0;
   let score = 0;
   let lives = LIVES;
@@ -148,6 +156,7 @@ export const createFroggerEngine: GameEngineFactory = (
     frog = newFrog();
     facing = "up";
     pendingDir = null;
+    bestRow = ROW_START;
     goals = GOAL_STARTS.map(() => false);
     timeLeft = roundTimeFor(1);
     score = 0;
@@ -162,6 +171,7 @@ export const createFroggerEngine: GameEngineFactory = (
     frog = newFrog();
     facing = "up";
     pendingDir = null;
+    bestRow = ROW_START;
     timeLeft = roundTimeFor(level);
   }
   // Las 5 bocas llenas: +200, siguiente nivel con carriles más rápidos
@@ -173,10 +183,43 @@ export const createFroggerEngine: GameEngineFactory = (
     resetFrog();
     emitStats();
   }
-  // Se completa en los pasos siguientes: muerte, meta y puntuación al aterrizar
-  function resolveLanding() {}
-  // Se completa en los pasos siguientes: muerte por tiempo agotado
-  function timeUp() {}
+  // Una vida menos; sin vidas termina la partida (onStats con lives 0 va antes)
+  function killFrog() {
+    lives--;
+    if (lives <= 0) {
+      lives = 0;
+      gameOver();
+      return;
+    }
+    resetFrog();
+    emitStats();
+  }
+  // Puntos por filas nuevas y, en la fila de metas, boca libre u ocupada
+  function resolveLanding() {
+    if (frog.row < bestRow) {
+      score += (bestRow - frog.row) * ROW_POINTS;
+      bestRow = frog.row;
+    }
+    if (frog.row !== ROW_GOALS) return;
+    const index = checkGoal(frog, goals);
+    if (index === -1) return killFrog();
+    goals[index] = true;
+    score += GOAL_POINTS + Math.floor(timeLeft / 1000) * TIME_BONUS_PER_SECOND;
+    if (goals.every(Boolean)) return completeRound();
+    resetFrog();
+    emitStats();
+  }
+  // Vehículo, agua o arrastre fuera de la rejilla; true si la rana murió
+  function checkHazards(): boolean {
+    if (
+      !checkRoadCollision(frog, lanes) &&
+      !isInWater(frog, lanes) &&
+      !isOffScreen(frog)
+    )
+      return false;
+    killFrog();
+    return true;
+  }
   // ── Update ─────────────────────────────────────────────────────────────────
   function startJump(dir: Direction) {
     const col = frog.col + DELTA[dir].col;
@@ -216,8 +259,9 @@ export const createFroggerEngine: GameEngineFactory = (
       ride(dtMs);
     }
     if (state !== "playing") return;
+    if (!frog.animating && checkHazards()) return;
     timeLeft -= dtMs;
-    if (timeLeft <= 0) timeUp();
+    if (timeLeft <= 0) killFrog();
     emitStats();
   }
   // ── Draw (sin HUD ni overlays: los pinta la plataforma) ────────────────────
