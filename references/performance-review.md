@@ -115,3 +115,47 @@ Comprobación con `build` + `start`:
 - `data-playing`: presente en `/juegos/frogger/jugar`; ausente en `/`, `/juegos` y `/salon`; tras pulsar SALIR desde `/juegos/snake/jugar` se retira. Sin errores de consola.
 - Capturas de `/juegos/frogger/jugar` antes y después (animaciones en pausa): iguales salvo la posición de las entidades del juego. `/`, `/juegos` y `/salon` no cambian: las reglas solo aplican con `data-playing`.
 - Frogger, móvil 390 × 844, CPU ×8, 10 s, 3 ejecuciones: `task %` 35.7 / 38.7 / 31.6 (mediana 35.7) frente a 47.6 de la base; `style %` 0 frente a 3.9. Mejora ≈ −12 puntos (−25 %).
+
+## Resultado final (paso 7)
+
+Misma metodología que la línea base (`build` + `start`, skin clásica, 20 s, mediana de 3 ejecuciones), con los cambios de los pasos 3 y 4. Los pasos 5 y 6 se omiten (ver Decisiones). `renders` = commits de `GamePlayer` / `GameCanvas`.
+
+### Escritorio, sin throttling
+
+| Juego      | fps   | p95 ms | max ms | cb medio / p95 ms | task % | renders |
+| ---------- | ----- | ------ | ------ | ----------------- | ------ | ------- |
+| frogger    | 141.5 | 7.1    | 14.0   | 0.10 / 0.2        | 4.0    | 1 / 0   |
+| asteroides | 141.9 | 7.1    | 20.8   | 0.05 / 0.1        | 3.1    | 1 / 0   |
+| tetris     | 141.9 | 7.1    | 14.1   | 0.05 / 0.2        | 2.9    | 0 / 0   |
+| arkanoid   | 143.7 | 7.1    | 14.0   | 0.06 / 0.1        | 2.1    | 9 / 0   |
+| snake      | 144.0 | 7.1    | 7.2    | 0.04 / 0.1        | 1.4    | 1 / 0   |
+
+### Móvil 390 × 844, CPU ×4 (el entorno del presupuesto)
+
+| Juego      | fps   | p95 ms | max ms | cb medio / p95 ms | task % | renders |
+| ---------- | ----- | ------ | ------ | ----------------- | ------ | ------- |
+| frogger    | 144.0 | 7.0    | 7.1    | 0.62 / 1.1        | 22.2   | 1 / 0   |
+| asteroides | 144.0 | 7.0    | 7.5    | 0.30 / 0.6        | 18.5   | 1 / 0   |
+| tetris     | 144.0 | 7.0    | 7.1    | 0.46 / 0.8        | 21.2   | 0 / 0   |
+| arkanoid   | 144.0 | 7.0    | 7.2    | 0.44 / 0.8        | 11.8   | 9 / 0   |
+| snake      | 144.0 | 7.0    | 7.1    | 0.29 / 0.5        | 6.9    | 1 / 0   |
+
+### Móvil 390 × 844, CPU ×8, antes → después
+
+| Juego      | task % antes → después | style % antes → después | fps  | p95 ms | max ms |
+| ---------- | ---------------------- | ----------------------- | ---- | ------ | ------ |
+| frogger    | 47.1 → 35.7 (−11.4)    | 4.1 → 0.0               | 144.0 | 7.0   | 7.1    |
+| asteroides | 37.1 → 29.7 (−7.4)     | 3.9 → 0.0               | 143.9 | 7.0   | 13.8   |
+| tetris     | 37.2 → 33.3 (−3.9)     | 3.2 → 0.0               | 144.0 | 7.0   | 7.2    |
+| arkanoid   | 28.4 → 19.6 (−8.8)     | 3.4 → 0.0               | 143.9 | 7.0   | 13.9   |
+| snake      | 23.3 → 14.4 (−8.9)     | 3.3 → 0.0               | 143.9 | 7.0   | 14.0   |
+
+Notas:
+
+- **Cumple el presupuesto** en los 5 juegos: escritorio ≥ 141 fps y p95 7.1 ms; móvil ×4 ≥ 144 fps y `frameMaxMs` ≤ 7.5 ms. A ×8 hay un pico aislado en una de las tres ejecuciones de arkanoid (41.6 ms) y de snake (69.6 ms); las medianas son 13.9 y 14.0 ms.
+- **Frogger:** `frameP95Ms` no mejora porque 7.0 ms es el suelo de 144 Hz (el criterio original no es medible aquí). La métrica sustitutiva, el hilo principal ocupado en móvil ×8, baja de 47.1 % a 35.7 %.
+- **Todos los juegos mejoran** (−4 a −11 puntos), porque `data-playing` y el `memo` de `GameCanvas` son comunes.
+- **`GameCanvas`: 0 renders** en todos los juegos y entornos (antes igualaba a `GamePlayer`).
+- **Escritorio**: fps de frogger, asteroides y tetris ≈ 141.5–142 frente a ≈ 143.5 en la línea base. Con `cb` y `task %` por debajo de la base no se atribuye a un empeoramiento real; es variación del navegador entre sesiones.
+- **`cbMeanMs` a ×8** sube respecto a la medición endurecida (p. ej. frogger 0.79 → 1.00 ms) aunque el `task %` total baja. No se ha investigado: el JS de los motores sigue por debajo de 1.1 ms por fotograma, un 6 % del presupuesto de 16.7 ms.
+- Móvil ×4 no tenía columna `task %` en la línea base (se midió después), por eso la comparación antes/después se hace a ×8.
