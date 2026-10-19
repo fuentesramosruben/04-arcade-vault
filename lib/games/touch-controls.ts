@@ -22,6 +22,25 @@ const RIGHT: TouchButton = {
   ariaLabel: "Mover a la derecha",
   area: "right",
 };
+// Cruceta de cuatro direcciones (snake y frogger)
+const DPAD = (verb: string): TouchButton[] => [
+  {
+    code: "ArrowUp",
+    key: "ArrowUp",
+    label: "↑",
+    ariaLabel: `${verb} hacia arriba`,
+    area: "up",
+  },
+  {
+    code: "ArrowDown",
+    key: "ArrowDown",
+    label: "↓",
+    ariaLabel: `${verb} hacia abajo`,
+    area: "down",
+  },
+  { ...LEFT, ariaLabel: `${verb} a la izquierda` },
+  { ...RIGHT, ariaLabel: `${verb} a la derecha` },
+];
 // Un layout por cada clave de ENGINES (los códigos son los que lee el motor)
 export const TOUCH_LAYOUTS: Record<string, TouchLayout> = {
   asteroides: {
@@ -72,26 +91,8 @@ export const TOUCH_LAYOUTS: Record<string, TouchLayout> = {
     ],
   },
   arkanoid: { buttons: [LEFT, RIGHT] },
-  snake: {
-    buttons: [
-      {
-        code: "ArrowUp",
-        key: "ArrowUp",
-        label: "↑",
-        ariaLabel: "Girar hacia arriba",
-        area: "up",
-      },
-      {
-        code: "ArrowDown",
-        key: "ArrowDown",
-        label: "↓",
-        ariaLabel: "Girar hacia abajo",
-        area: "down",
-      },
-      { ...LEFT, ariaLabel: "Girar a la izquierda" },
-      { ...RIGHT, ariaLabel: "Girar a la derecha" },
-    ],
-  },
+  snake: { buttons: DPAD("Girar") },
+  frogger: { buttons: DPAD("Saltar") },
 };
 // Despacha el evento en window: su target no es un HTMLElement, así que los
 // motores no lo confunden con un input o botón enfocado

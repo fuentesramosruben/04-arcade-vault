@@ -13,6 +13,7 @@ export const GAME_SKINS: Record<string, SkinId[]> = {
   tetris: ["clasico"],
   arkanoid: ["clasico", "neon", "retro"],
   snake: ["clasico", "neon", "retro"],
+  frogger: ["clasico"],
 };
 export function getGameSkins(gameId: string): SkinId[] {
   return GAME_SKINS[gameId] ?? [DEFAULT_SKIN];

@@ -53,6 +53,11 @@ const CONTROLS: Record<string, { keys: string[]; label: string }[]> = {
     { keys: ["W", "A", "S", "D"], label: "o WASD" },
     { keys: ["P"], label: "pausa" },
   ],
+  frogger: [
+    { keys: ["←", "↑", "↓", "→"], label: "saltar" },
+    { keys: ["W", "A", "S", "D"], label: "o WASD" },
+    { keys: ["P"], label: "pausa" },
+  ],
 };
 interface SavedScore {
   game: string;
