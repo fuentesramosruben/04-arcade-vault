@@ -6,7 +6,7 @@ Fuente de verdad del progreso: `references/game-with-themes.md`.
 
 - Neón (2026-10-18, revisada): synthwave. cyan `#ff2bd6` (nave), magenta `#b6ff00` (power-up), yellow `#00ffe1` (bala), green `#39ff14`, ink `#c9a6ff`, game-bg `#12002b`, flame `#ff5ad0`, glow 40 (asteroid glow 16). La primera versión (cian puro sobre negro) era casi igual a clásico: una skin debe diferir en tono y fondo, no solo en saturación.
 - Retro (2026-10-18): cyan/green `#33ff66`, yellow `#ffb000`, magenta `#ff6a3d`, ink `#d8f5c0`, game-bg `#0a0804`, flame `#ff8a1f`, glow 0/0. Hecho en asteroides.
-- Pastel: pendiente.
+- Pastel (2026-10-19): cyan #8fd0ff, magenta #ff9fc2, yellow #ffcba4, green #8ff0b8, ink #cfc3ff, game-bg #1b1633, glow 4/0. Hecho en frogger.
 
 ## Infraestructura (hecha)
 
@@ -41,3 +41,7 @@ Fuente de verdad del progreso: `references/game-with-themes.md`.
 
 - Solo CSS: `[data-skin="retro"][data-game="snake"] { --game-glow-snake: 0 }` + `GAME_SKINS`. Sin build -> ⚠️. Fruta respaldo vs serpiente solo 2.1 de luminancia (distingue el tono). Sprites sin filtro.
 - Arkanoid retro (2026-10-18): override en [data-game=arkanoid] --green #b5e61d, red #c8321f, hotpink #ffe9a8, gray #a89878 (cyan==green en retro base). Build no ejecutado -> ⚠️.
+
+## Frogger (2026-10-19)
+
+- Motor ya migrado; solo CSS + GAME_SKINS. Overrides: neón --magenta #ff7a1a (carretera), retro --green #b5e61d. Sin build -> las 3 en ⚠️. Capturas salen con modal de game over si no se juega. No hay Python: usar node para editar docs.

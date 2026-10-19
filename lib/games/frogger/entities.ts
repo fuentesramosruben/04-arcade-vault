@@ -23,7 +23,7 @@ export interface Entity {
   width: number;
   type: EntityType;
   submerged?: boolean;
-  phase?: number; // ms dentro del ciclo de inmersión (solo tortugas)
+  timer?: number; // ms hasta el próximo cambio de inmersión (solo tortugas)
 }
 export interface Lane {
   row: number;
@@ -65,9 +65,11 @@ const RIVER_LANES: LaneSpec[] = [
   { row: 5, type: "turtle", width: 3, count: 3, speed: 2, dir: -1, offset: 5 },
   { row: 6, type: "log", width: 3, count: 3, speed: 3, dir: 1, offset: 2 },
 ];
+function randomBetween([min, max]: readonly [number, number]): number {
+  return min + Math.random() * (max - min);
+}
 function buildLane(spec: LaneSpec, speedFactor: number): Lane {
   const period = LANE_LOOP / spec.count;
-  const cycle = TURTLE_VISIBLE_MS + TURTLE_SUBMERGED_MS;
   const entities: Entity[] = [];
   for (let i = 0; i < spec.count; i++) {
     const entity: Entity = {
@@ -76,9 +78,9 @@ function buildLane(spec: LaneSpec, speedFactor: number): Lane {
       type: spec.type,
     };
     if (spec.type === "turtle") {
-      // Cada grupo arranca en un punto distinto del ciclo
-      entity.phase = (i * cycle) / spec.count;
-      entity.submerged = entity.phase >= TURTLE_VISIBLE_MS;
+      // Todas arrancan visibles; cada grupo se hunde en un momento distinto
+      entity.submerged = false;
+      entity.timer = randomBetween(TURTLE_VISIBLE_MS);
     }
     entities.push(entity);
   }
@@ -165,7 +167,6 @@ export function checkGoal(frog: Frog, goals: boolean[]): number {
 // Mueve las entidades de cada carril y avanza el ciclo de las tortugas. Una
 // entidad que sale por un borde reaparece LANE_LOOP celdas atrás, fuera de pantalla.
 export function advanceLanes(lanes: Lane[], dtMs: number): void {
-  const cycle = TURTLE_VISIBLE_MS + TURTLE_SUBMERGED_MS;
   for (const lane of lanes) {
     const delta = (lane.speed * lane.dir * dtMs) / 1000;
     for (const entity of lane.entities) {
@@ -175,8 +176,13 @@ export function advanceLanes(lanes: Lane[], dtMs: number): void {
         entity.col += LANE_LOOP;
       }
       if (entity.type === "turtle") {
-        entity.phase = ((entity.phase ?? 0) + dtMs) % cycle;
-        entity.submerged = entity.phase >= TURTLE_VISIBLE_MS;
+        entity.timer = (entity.timer ?? 0) - dtMs;
+        if (entity.timer <= 0) {
+          entity.submerged = !entity.submerged;
+          entity.timer = randomBetween(
+            entity.submerged ? TURTLE_SUBMERGED_MS : TURTLE_VISIBLE_MS,
+          );
+        }
       }
     }
   }

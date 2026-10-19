@@ -30,8 +30,12 @@ export const LEVEL_SPEED_FACTOR = 0.15;
 // así una entidad que sale por un borde reaparece fuera de pantalla por el otro
 export const LANE_LOOP = COLS + 4;
 // Tortugas: ciclo de inmersión
-export const TURTLE_VISIBLE_MS = 3000;
-export const TURTLE_SUBMERGED_MS = 1500;
+// Cada grupo sortea la duración de cada fase: [mínimo, máximo] en ms
+export const TURTLE_VISIBLE_MS = [5000, 10000] as const;
+export const TURTLE_SUBMERGED_MS = [1500, 2500] as const;
+// Aviso: parpadeo durante el último segundo antes de hundirse
+export const TURTLE_WARN_MS = 1000;
+export const TURTLE_BLINK_MS = 120;
 // Puntuación
 export const ROW_POINTS = 10;
 export const GOAL_POINTS = 50;

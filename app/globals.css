@@ -860,6 +860,36 @@
     margin-top: 16px;
     flex-wrap: wrap;
   }
+  /* Ficha móvil: estrellas sin salto de línea y acciones a todo el ancho (48 px) */
+  @media (max-width: 520px) {
+    .stat-strip {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .stat-strip > div {
+      padding: 12px 10px;
+      min-width: 0;
+    }
+    .stat-strip > div:nth-child(3) {
+      grid-column: 1 / -1;
+    }
+    .stat-strip .v {
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .detail-actions {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .detail-actions .btn {
+      width: 100%;
+      min-height: 52px;
+    }
+    .detail-actions .btn.xl {
+      padding: 18px 16px;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+    }
+  }
   .leaderboard {
     border: 1px solid var(--line);
     background: var(--bg-2);
@@ -1065,6 +1095,26 @@
     --game-red: #c8321f;
     --game-hotpink: #ffe9a8;
     --game-gray: #a89878;
+  }
+  /* Frogger neón: la carretera en lima se confundía con la rana verde, se pasa a naranja */
+  .crt[data-skin="neon"][data-game="frogger"] {
+    --magenta: #ff7a1a;
+  }
+  /* Frogger retro: cyan (río) y green (rana) coinciden en la base, se separa la rana en verde lima */
+  .crt[data-skin="retro"][data-game="frogger"] {
+    --green: #b5e61d;
+  }
+  /* Skin PASTEL: menta, lavanda, melocotón, rosa y celeste sobre berenjena azulada, glow muy leve */
+  .crt[data-skin="pastel"] {
+    --cyan: #8fd0ff; /* celeste */
+    --magenta: #ff9fc2; /* rosa */
+    --yellow: #ffcba4; /* melocotón */
+    --green: #8ff0b8; /* menta */
+    --ink: #cfc3ff; /* lavanda */
+    --game-bg: #1b1633;
+    --game-flame: #ffcba4;
+    --game-glow: 4;
+    --game-glow-asteroid: 0;
   }
   .crt::before {
     content: "";

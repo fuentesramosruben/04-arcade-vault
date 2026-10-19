@@ -31,6 +31,8 @@ import {
   ROW_START,
   START_COL,
   TIME_BONUS_PER_SECOND,
+  TURTLE_BLINK_MS,
+  TURTLE_WARN_MS,
   W,
   type ColorKey,
   type Colors,
@@ -342,6 +344,9 @@ export const createFroggerEngine: GameEngineFactory = (
       }
       case "turtle": {
         // Un caparazón por celda; sumergidas, solo el contorno tenue
+        const timer = entity.timer ?? Infinity;
+        const warning = !entity.submerged && timer < TURTLE_WARN_MS;
+        const dim = warning && Math.floor(timer / TURTLE_BLINK_MS) % 2 === 0;
         for (let i = 0; i < entity.width; i++) {
           const cx = x + i * CELL + CELL / 2;
           const cy = y + CELL / 2;
@@ -353,6 +358,7 @@ export const createFroggerEngine: GameEngineFactory = (
             ctx.lineWidth = 2;
             ctx.stroke();
           } else {
+            if (dim) ctx.globalAlpha = 0.3;
             ctx.fillStyle = colors.frog;
             ctx.fill();
             ctx.strokeStyle = bg;
