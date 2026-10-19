@@ -19,6 +19,7 @@ import {
   JUMP_MS,
   LIVES,
   MAX_DT,
+  ROUND_POINTS,
   ROWS,
   ROW_GOALS,
   ROW_RIVER_BOT,
@@ -154,6 +155,22 @@ export const createFroggerEngine: GameEngineFactory = (
     level = 1;
     state = "playing";
     lastStats = null;
+    emitStats();
+  }
+  // Rana en la salida, entrada descartada y temporizador de la ronda a tope
+  function resetFrog() {
+    frog = newFrog();
+    facing = "up";
+    pendingDir = null;
+    timeLeft = roundTimeFor(level);
+  }
+  // Las 5 bocas llenas: +200, siguiente nivel con carriles más rápidos
+  function completeRound() {
+    score += ROUND_POINTS;
+    level++;
+    goals = GOAL_STARTS.map(() => false);
+    lanes = buildLanes(level);
+    resetFrog();
     emitStats();
   }
   // Se completa en los pasos siguientes: muerte, meta y puntuación al aterrizar
