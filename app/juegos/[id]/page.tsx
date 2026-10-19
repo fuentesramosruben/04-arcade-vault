@@ -103,6 +103,9 @@ async function GameStatCells({ gameId }: { gameId: string }) {
 export async function generateStaticParams() {
   return GAMES.map((g) => ({ id: g.id }));
 }
+// Igual que /jugar: params fuera de Suspense hace que Next avise en consola; la
+// ruta bloquea a propósito y un id inexistente sigue respondiendo 404.
+export const instant = false;
 export default async function GameDetailPage({
   params,
 }: PageProps<"/juegos/[id]">) {

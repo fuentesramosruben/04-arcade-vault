@@ -756,6 +756,17 @@
       center/cover no-repeat;
     filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.55));
   }
+  .cover-frogger {
+    background: linear-gradient(180deg, #002a1c, #00202a 45%, #0a0a18 75%);
+  }
+  .cover-frogger::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect y='0' width='400' height='40' fill='%2300ff88' fill-opacity='.12'/%3E%3Cg fill='none' stroke='%23f5ff00' stroke-width='2'%3E%3Crect x='30' y='8' width='50' height='24'/%3E%3Crect x='115' y='8' width='50' height='24'/%3E%3Crect x='200' y='8' width='50' height='24'/%3E%3Crect x='285' y='8' width='50' height='24'/%3E%3C/g%3E%3Crect y='40' width='400' height='110' fill='%2300e5ff' fill-opacity='.12'/%3E%3Cg fill='%23f5ff00' fill-opacity='.55'%3E%3Crect x='30' y='58' width='110' height='20' rx='3'/%3E%3Crect x='250' y='100' width='140' height='20' rx='3'/%3E%3Crect x='60' y='122' width='90' height='20' rx='3'/%3E%3C/g%3E%3Cg fill='%2300ff88'%3E%3Ccircle cx='195' cy='68' r='10'/%3E%3Ccircle cx='222' cy='68' r='10'/%3E%3Ccircle cx='320' cy='110' r='10'/%3E%3C/g%3E%3Cg fill='%23ff006e'%3E%3Crect x='40' y='180' width='44' height='22' rx='3'/%3E%3Crect x='250' y='210' width='44' height='22' rx='3'/%3E%3C/g%3E%3Crect x='150' y='238' width='110' height='24' rx='3' fill='%23e6e9ff' fill-opacity='.85'/%3E%3Cellipse cx='200' cy='282' rx='15' ry='13' fill='%2300ff88'/%3E%3Ccircle cx='194' cy='276' r='3.5' fill='%23e6e9ff'/%3E%3Ccircle cx='206' cy='276' r='3.5' fill='%23e6e9ff'/%3E%3C/svg%3E")
+      center/cover no-repeat;
+    filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.55));
+  }
   .cover-asteroides {
     background: radial-gradient(circle at 50% 50%, #0a0a30, #000);
   }
@@ -848,6 +859,36 @@
     gap: 12px;
     margin-top: 16px;
     flex-wrap: wrap;
+  }
+  /* Ficha móvil: estrellas sin salto de línea y acciones a todo el ancho (48 px) */
+  @media (max-width: 520px) {
+    .stat-strip {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .stat-strip > div {
+      padding: 12px 10px;
+      min-width: 0;
+    }
+    .stat-strip > div:nth-child(3) {
+      grid-column: 1 / -1;
+    }
+    .stat-strip .v {
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .detail-actions {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .detail-actions .btn {
+      width: 100%;
+      min-height: 52px;
+    }
+    .detail-actions .btn.xl {
+      padding: 18px 16px;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+    }
   }
   .leaderboard {
     border: 1px solid var(--line);
@@ -1055,6 +1096,26 @@
     --game-hotpink: #ffe9a8;
     --game-gray: #a89878;
   }
+  /* Frogger neón: la carretera en lima se confundía con la rana verde, se pasa a naranja */
+  .crt[data-skin="neon"][data-game="frogger"] {
+    --magenta: #ff7a1a;
+  }
+  /* Frogger retro: cyan (río) y green (rana) coinciden en la base, se separa la rana en verde lima */
+  .crt[data-skin="retro"][data-game="frogger"] {
+    --green: #b5e61d;
+  }
+  /* Skin PASTEL: menta, lavanda, melocotón, rosa y celeste sobre berenjena azulada, glow muy leve */
+  .crt[data-skin="pastel"] {
+    --cyan: #8fd0ff; /* celeste */
+    --magenta: #ff9fc2; /* rosa */
+    --yellow: #ffcba4; /* melocotón */
+    --green: #8ff0b8; /* menta */
+    --ink: #cfc3ff; /* lavanda */
+    --game-bg: #1b1633;
+    --game-flame: #ffcba4;
+    --game-glow: 4;
+    --game-glow-asteroid: 0;
+  }
   .crt::before {
     content: "";
     position: absolute;
@@ -1174,7 +1235,8 @@
     grid-template-columns: repeat(2, 1fr);
     grid-template-areas: "left right";
   }
-  .touch-controls[data-game="snake"] {
+  .touch-controls[data-game="snake"],
+  .touch-controls[data-game="frogger"] {
     grid-template-columns: repeat(3, minmax(56px, 76px));
     grid-template-areas:
       ". up ."
@@ -1244,13 +1306,15 @@
   }
   /* Acciones: pulsadores redondeados, magenta (disparo, caída) y amarillo (propulsar, rotar) */
   .touch-btn[data-area="action"],
-  .touch-controls:not([data-game="snake"]) .touch-btn[data-area="up"] {
+  .touch-controls:not([data-game="snake"], [data-game="frogger"])
+    .touch-btn[data-area="up"] {
     clip-path: none;
     border-radius: 999px;
     border-width: 2px;
   }
   .touch-btn[data-area="action"]::before,
-  .touch-controls:not([data-game="snake"]) .touch-btn[data-area="up"]::before {
+  .touch-controls:not([data-game="snake"], [data-game="frogger"])
+    .touch-btn[data-area="up"]::before {
     border-radius: 999px;
     clip-path: none;
   }
@@ -1260,12 +1324,14 @@
     font-size: 10px;
     letter-spacing: 0.08em;
   }
-  .touch-controls:not([data-game="snake"]) .touch-btn[data-area="up"] {
+  .touch-controls:not([data-game="snake"], [data-game="frogger"])
+    .touch-btn[data-area="up"] {
     --touch-accent: var(--yellow);
     --touch-accent-rgb: 245, 255, 0;
   }
   .touch-btn[data-area="action"]:active,
-  .touch-controls:not([data-game="snake"]) .touch-btn[data-area="up"]:active {
+  .touch-controls:not([data-game="snake"], [data-game="frogger"])
+    .touch-btn[data-area="up"]:active {
     box-shadow:
       0 0 16px rgba(var(--touch-accent-rgb), 0.6),
       inset 0 0 14px rgba(var(--touch-accent-rgb), 0.55);

@@ -1,5 +1,6 @@
 import { createArkanoidEngine } from "./arkanoid/engine";
 import { createAsteroidsEngine } from "./asteroids/engine";
+import { createFroggerEngine } from "./frogger/engine";
 import { createSnakeEngine } from "./snake/engine";
 import { createTetrisEngine } from "./tetris/engine";
 import type { GameEngineFactory } from "./types";
@@ -8,6 +9,7 @@ export const ENGINES: Record<string, GameEngineFactory> = {
   tetris: createTetrisEngine,
   arkanoid: createArkanoidEngine,
   snake: createSnakeEngine,
+  frogger: createFroggerEngine,
 };
 export interface EngineMeta {
   width: number; // por defecto 800
@@ -25,6 +27,7 @@ const DEFAULT_META: EngineMeta = {
 export const ENGINE_META: Record<string, Partial<EngineMeta>> = {
   tetris: { width: 420, height: 600, lives: false, lines: true },
   snake: { lives: false },
+  frogger: { width: 640, height: 560 },
 };
 export function getEngineMeta(id: string): EngineMeta {
   return { ...DEFAULT_META, ...ENGINE_META[id] };
