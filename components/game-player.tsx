@@ -5,6 +5,7 @@ import { GameCanvas, type GameCanvasHandle } from "@/components/game-canvas";
 import { useSession } from "@/components/session-provider";
 import { TouchControls } from "@/components/touch-controls";
 import type { Game } from "@/lib/games";
+import { usePerfRenders } from "@/lib/perf";
 import { ENGINES, getEngineMeta } from "@/lib/games/registry";
 import {
   DEFAULT_SKIN,
@@ -77,6 +78,7 @@ function saveScore(entry: Omit<SavedScore, "at">) {
   }
 }
 export function GamePlayer({ game }: { game: Game }) {
+  usePerfRenders("GamePlayer");
   const { user } = useSession();
   const hasEngine = game.id in ENGINES;
   const canvasRef = useRef<GameCanvasHandle>(null);

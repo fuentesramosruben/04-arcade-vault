@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useImperativeHandle, useRef } from "react";
+import { usePerfRenders } from "@/lib/perf";
 import { ENGINES, getEngineMeta } from "@/lib/games/registry";
 import type { GameEngine, GameStats } from "@/lib/games/types";
 export interface GameCanvasHandle {
@@ -26,6 +27,7 @@ export function GameCanvas({
   onGameOver,
   ref,
 }: GameCanvasProps) {
+  usePerfRenders("GameCanvas");
   const { width, height } = getEngineMeta(gameId);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
