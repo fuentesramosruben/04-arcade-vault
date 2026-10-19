@@ -23,8 +23,11 @@ export const MAX_DT = 50; // ms
 export const ROUND_TIME_MS = 15000;
 export const ROUND_TIME_STEP_MS = 500;
 export const MIN_ROUND_TIME_MS = 8000;
-// Velocidad de los carriles: +15 % por nivel
+// Velocidad de los carriles (celdas/s): +15 % por nivel
 export const LEVEL_SPEED_FACTOR = 0.15;
+// Longitud del bucle de cada carril: COLS + el ancho máximo de una entidad (4),
+// así una entidad que sale por un borde reaparece fuera de pantalla por el otro
+export const LANE_LOOP = COLS + 4;
 // Tortugas: ciclo de inmersión
 export const TURTLE_VISIBLE_MS = 3000;
 export const TURTLE_SUBMERGED_MS = 1500;
