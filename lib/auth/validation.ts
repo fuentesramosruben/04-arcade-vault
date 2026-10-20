@@ -4,6 +4,8 @@ export const USERNAME_MIN = 3;
 export const USERNAME_MAX = 12;
 export const PASSWORD_MIN = 8;
 export const EMAIL_MAX = 120;
+// Símbolos: el conjunto exacto que acepta Supabase Auth
+const PASSWORD_SYMBOLS = "!@#$%^&*()_+-=[]{};':\"|<>?,./`~";
 const USERNAME_RE = /^[A-Z0-9_-]+$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Forma canónica del nombre arcade: la misma que exige `profiles.username`. */
@@ -27,9 +29,18 @@ export function validateEmail(value: string): string | null {
   }
   return null;
 }
+/** Política de contraseña de Supabase Auth: se replica para rechazar antes de llamarle. */
 export function validatePassword(value: string): string | null {
   if (value.length < PASSWORD_MIN) {
     return `La contraseña debe tener al menos ${PASSWORD_MIN} caracteres.`;
+  }
+  const composed =
+    /[a-z]/.test(value) &&
+    /[A-Z]/.test(value) &&
+    /[0-9]/.test(value) &&
+    [...value].some((char) => PASSWORD_SYMBOLS.includes(char));
+  if (!composed) {
+    return "La contraseña necesita minúscula, mayúscula, número y símbolo.";
   }
   return null;
 }
