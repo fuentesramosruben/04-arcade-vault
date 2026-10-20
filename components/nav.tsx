@@ -1,12 +1,9 @@
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/components/session-provider";
-
 type RouteName = "inicio" | "biblioteca" | "salon" | "acerca" | "auth";
-
 function activeRoute(pathname: string): RouteName | null {
   if (pathname === "/") return "inicio";
   if (pathname.startsWith("/juegos")) return "biblioteca";
@@ -15,7 +12,6 @@ function activeRoute(pathname: string): RouteName | null {
   if (pathname.startsWith("/auth")) return "auth";
   return null;
 }
-
 export function Nav() {
   const pathname = usePathname();
   const { user, signOut } = useSession();
@@ -23,7 +19,6 @@ export function Nav() {
   const current = activeRoute(pathname);
   const cls = (name: RouteName) => (current === name ? "active" : undefined);
   const close = () => setOpen(false);
-
   return (
     <>
       <nav className="av-nav">
@@ -53,9 +48,18 @@ export function Nav() {
           <span>CRÉDITOS · 03</span>
         </div>
         {user ? (
-          <button className="btn ghost auth-btn" onClick={signOut}>
-            {user.name} ▾
-          </button>
+          <>
+            <span className="user-label" title={user.email ?? undefined}>
+              {user.name ?? "CUENTA"}
+            </span>
+            <button
+              className="btn ghost auth-btn"
+              onClick={signOut}
+              title="Cerrar sesión"
+            >
+              Desconectar
+            </button>
+          </>
         ) : (
           <Link href="/auth" className="btn auth-btn">
             Iniciar Sesión
@@ -69,13 +73,15 @@ export function Nav() {
           ≡
         </button>
       </nav>
-
       <div
         className={"av-mobile-backdrop" + (open ? " open" : "")}
         onClick={close}
       ></div>
       <aside className={"av-mobile-panel" + (open ? " open" : "")}>
-        <div className="pixel neon-cyan" style={{ fontSize: 11, marginBottom: 16 }}>
+        <div
+          className="pixel neon-cyan"
+          style={{ fontSize: 11, marginBottom: 16 }}
+        >
           MENÚ
         </div>
         <Link href="/" className={cls("inicio")} onClick={close}>
@@ -90,13 +96,29 @@ export function Nav() {
         <Link href="/acerca" className={cls("acerca")} onClick={close}>
           Acerca de
         </Link>
-        <Link href="/auth" className={cls("auth")} onClick={close}>
-          {user ? "Cuenta" : "Iniciar Sesión"}
-        </Link>
+        {user ? (
+          <button
+            className="btn ghost"
+            onClick={() => {
+              close();
+              void signOut();
+            }}
+          >
+            Cerrar sesión{user.name ? ` · ${user.name}` : ""}
+          </button>
+        ) : (
+          <Link href="/auth" className={cls("auth")} onClick={close}>
+            Iniciar Sesión
+          </Link>
+        )}
         <div style={{ flex: 1 }}></div>
         <div
           className="pixel"
-          style={{ fontSize: 9, color: "var(--ink-faint)", letterSpacing: "0.16em" }}
+          style={{
+            fontSize: 9,
+            color: "var(--ink-faint)",
+            letterSpacing: "0.16em",
+          }}
         >
           CRÉDITOS · 03
         </div>

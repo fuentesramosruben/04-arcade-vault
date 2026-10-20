@@ -18,8 +18,7 @@ import {
 import type { GameStats } from "@/lib/games/types";
 import { createClient } from "@/lib/supabase/client";
 const LIVES = 3;
-const MIN_NAME = 3;
-const MAX_NAME = 12;
+const MOCK_MAX_NAME = 10;
 const SCORES_KEY = "av_scores";
 function initialStats(meta: ReturnType<typeof getEngineMeta>): GameStats {
   return {
@@ -115,11 +114,11 @@ export function GamePlayer({ game }: { game: Game }) {
     setSkin(s);
     storeSkin(game.id, s);
   };
+  // Con motor el nombre es siempre el del perfil (lo exige el RLS de scores);
+  // el nombre libre solo existe en los juegos sin motor (localStorage).
   const name = editedName ?? user?.name ?? "INVITADO";
-  // Con motor el nombre se normaliza como exige el CHECK de la tabla scores
-  const cleanName = name.trim().toUpperCase().slice(0, MAX_NAME).trim();
-  const canSave =
-    !hasEngine || (cleanName.length >= MIN_NAME && stats.score >= 1);
+  const profileName = user?.name ?? null;
+  const canSave = !hasEngine || (profileName !== null && stats.score >= 1);
   const { score, lives, lines } = stats;
   // Marco del CRT con la proporción del canvas; solo se limita el ancho si no es el 4:3 por defecto
   const customRatio = meta.width !== 800 || meta.height !== 600;
@@ -189,14 +188,17 @@ export function GamePlayer({ game }: { game: Game }) {
       setSaved(true);
       return;
     }
-    if (!canSave || saving) return;
+    if (!canSave || saving || !user || !profileName) return;
     setSaving(true);
     setSaveError(false);
     let failed = false;
     try {
-      const { error } = await createClient()
-        .from("scores")
-        .insert({ game_id: game.id, player_name: cleanName, score });
+      const { error } = await createClient().from("scores").insert({
+        game_id: game.id,
+        player_name: profileName,
+        score,
+        user_id: user.id,
+      });
       failed = error !== null;
     } catch {
       failed = true;
@@ -369,62 +371,105 @@ export function GamePlayer({ game }: { game: Game }) {
             <div className="final-label">PUNTUACIÓN FINAL</div>
             <div className="final">{score.toLocaleString("es-ES")}</div>
             {!saved ? (
-              <>
+              hasEngine ? (
+                profileName ? (
+                  <>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        margin: "22px 0 12px",
+                      }}
+                    >
+                      <button
+                        className="btn yellow"
+                        onClick={handleSave}
+                        disabled={!canSave || saving}
+                      >
+                        {saving
+                          ? "GUARDANDO…"
+                          : saveError
+                            ? "REINTENTAR"
+                            : "GUARDAR PUNTUACIÓN"}
+                      </button>
+                    </div>
+                    {saveError && (
+                      <div
+                        className="mono"
+                        role="alert"
+                        style={{
+                          marginTop: 10,
+                          fontSize: 11,
+                          letterSpacing: "0.1em",
+                          color: "var(--magenta)",
+                        }}
+                      >
+                        ▸ NO SE PUDO GUARDAR. COMPRUEBA LA CONEXIÓN E INTÉNTALO
+                        DE NUEVO.
+                      </div>
+                    )}
+                    {stats.score < 1 && (
+                      <div
+                        className="mono"
+                        style={{
+                          marginTop: 10,
+                          fontSize: 11,
+                          letterSpacing: "0.1em",
+                          color: "var(--ink-faint)",
+                        }}
+                      >
+                        ▸ NECESITAS AL MENOS 1 PUNTO PARA GUARDAR
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 10,
+                      width: "100%",
+                    }}
+                  >
+                    <div
+                      className="mono"
+                      style={{
+                        fontSize: 11,
+                        letterSpacing: "0.1em",
+                        color: "var(--ink-dim)",
+                        textAlign: "center",
+                        lineHeight: 1.7,
+                      }}
+                    >
+                      {user
+                        ? "▸ ELIGE UN NOMBRE ARCADE PARA GUARDAR TU PUNTUACIÓN"
+                        : "▸ ENTRA O REGÍSTRATE PARA GUARDAR TU PUNTUACIÓN EN EL RANKING"}
+                    </div>
+                    <Link
+                      href={user ? "/auth/nombre" : "/auth"}
+                      className="btn yellow"
+                    >
+                      {user ? "ELEGIR NOMBRE" : "ENTRAR / REGISTRARSE"}
+                    </Link>
+                  </div>
+                )
+              ) : (
                 <div className="input-row">
                   <input
                     value={name}
                     onChange={(e) =>
                       setEditedName(
-                        e.target.value
-                          .toUpperCase()
-                          .slice(0, hasEngine ? MAX_NAME : 10),
+                        e.target.value.toUpperCase().slice(0, MOCK_MAX_NAME),
                       )
                     }
                     placeholder="TUS INICIALES"
                   />
-                  <button
-                    className="btn yellow"
-                    onClick={handleSave}
-                    disabled={!canSave || saving}
-                  >
-                    {saving
-                      ? "GUARDANDO…"
-                      : saveError
-                        ? "REINTENTAR"
-                        : "GUARDAR PUNTUACIÓN"}
+                  <button className="btn yellow" onClick={handleSave}>
+                    GUARDAR PUNTUACIÓN
                   </button>
                 </div>
-                {hasEngine && saveError && (
-                  <div
-                    className="mono"
-                    role="alert"
-                    style={{
-                      marginTop: 10,
-                      fontSize: 11,
-                      letterSpacing: "0.1em",
-                      color: "var(--magenta)",
-                    }}
-                  >
-                    ▸ NO SE PUDO GUARDAR. COMPRUEBA LA CONEXIÓN E INTÉNTALO DE
-                    NUEVO.
-                  </div>
-                )}
-                {hasEngine && !canSave && (
-                  <div
-                    className="mono"
-                    style={{
-                      marginTop: 10,
-                      fontSize: 11,
-                      letterSpacing: "0.1em",
-                      color: "var(--ink-faint)",
-                    }}
-                  >
-                    {stats.score < 1
-                      ? "▸ NECESITAS AL MENOS 1 PUNTO PARA GUARDAR"
-                      : `▸ EL NOMBRE NECESITA AL MENOS ${MIN_NAME} CARACTERES`}
-                  </div>
-                )}
-              </>
+              )
             ) : (
               <div
                 style={{
