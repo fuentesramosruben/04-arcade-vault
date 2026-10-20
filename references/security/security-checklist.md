@@ -1,24 +1,26 @@
 ## Checklist de seguridad básico
 
-  - [ ] RLS: Row Level Security habilitado en ambas tablas: `games` y `scores`
-  - [ ] Minimum password length — mínimo 8 caracteres
-  - [ ] Leaked password protection — (el warning 4)
-  - [ ] Max signup rate — limitar signups por IP (anti-bot)
-  - [ ] Headers de seguridad en Next.js
-  
-  Ej:
+Estado según SPEC 13 (`specs/13-medidas-de-seguridad-basicas.md`).
+
+- [x] RLS: Row Level Security habilitado en ambas tablas: `games` y `scores` (y en `profiles`)
+- [x] Minimum password length — mínimo 8 caracteres (servidor y `validatePassword`; además exige minúscula, mayúscula, dígito y símbolo)
+- [~] Leaked password protection — (el warning 4): la protección nativa requiere plan Pro y sigue desactivada. Mitigación propia: `lib/auth/pwned.ts` (HaveIBeenPwned, k-anonymity) en `signUp`. El aviso `auth_leaked_password_protection` queda aceptado hasta pasar a Pro
+- [x] Max signup rate — limitar signups por IP (anti-bot): 10 registros e inicios de sesión por IP cada 5 minutos (Dashboard > Authentication > Rate Limits)
+- [x] Headers de seguridad en Next.js (`next.config.ts`; sin CSP)
+- [x] Avisos `anon_/authenticated_security_definer_function_executable`: migración `revoke_rls_auto_enable_execute`
+- [x] Protección de rutas con Proxy: `/auth/nombre` exige sesión y `/auth` redirige a `/` con sesión
+
+Ej:
 
 ```ts
 const securityHeaders = [
-  { key: 'X-Content-Type-Options', value: 'nosniff' },
-  { key: 'X-Frame-Options', value: 'DENY' },
-  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
 ];
 
 // En la config de Next.js:
-headers: async () => [
-  { source: '/(.*)', headers: securityHeaders }
-]
+headers: async () => [{ source: "/(.*)", headers: securityHeaders }];
 ```
 
 ## Por el ladod e Supabase:
