@@ -150,6 +150,21 @@
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     opacity: 0.35;
   }
+  /* Durante la partida (GamePlayer con motor pone data-playing en <html>): sin animación de la
+     rejilla ni mix-blend-mode, que obligan a recomponer la pila en cada fotograma del canvas. */
+  html[data-playing] .av-bg::before {
+    animation: none;
+  }
+  html[data-playing] .av-bg::after {
+    mix-blend-mode: normal;
+  }
+  html[data-playing] .av-noise {
+    display: none;
+  }
+  html[data-playing] .crt-screen::after {
+    /* multiply con negro equivale a negro con alfa fija */
+    mix-blend-mode: normal;
+  }
   /* ===== app frame ===== */
   .av-root {
     position: relative;

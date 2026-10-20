@@ -1,10 +1,11 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { GameCanvas, type GameCanvasHandle } from "@/components/game-canvas";
 import { useSession } from "@/components/session-provider";
 import { TouchControls } from "@/components/touch-controls";
 import type { Game } from "@/lib/games";
+import { usePerfRenders } from "@/lib/perf";
 import { ENGINES, getEngineMeta } from "@/lib/games/registry";
 import {
   DEFAULT_SKIN,
@@ -77,6 +78,7 @@ function saveScore(entry: Omit<SavedScore, "at">) {
   }
 }
 export function GamePlayer({ game }: { game: Game }) {
+  usePerfRenders("GamePlayer");
   const { user } = useSession();
   const hasEngine = game.id in ENGINES;
   const canvasRef = useRef<GameCanvasHandle>(null);
@@ -97,6 +99,15 @@ export function GamePlayer({ game }: { game: Game }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSkin(getStoredSkin(game.id));
   }, [hasEngine, game.id]);
+  // Marca <html> mientras se juega para simplificar las capas CSS (app/globals.css)
+  useEffect(() => {
+    if (!hasEngine) return;
+    const root = document.documentElement;
+    root.dataset.playing = "";
+    return () => {
+      delete root.dataset.playing;
+    };
+  }, [hasEngine]);
   const chooseSkin = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const s = e.target.value as SkinId;
     // Se desenfoca para que Espacio/flechas no cambien la skin durante la partida
@@ -156,11 +167,12 @@ export function GamePlayer({ game }: { game: Game }) {
     setSaveError(false);
     setRunKey((k) => k + 1);
   };
-  const handleGameOver = (finalScore: number) => {
+  // Referencia estable (solo usa setters) para que memo(GameCanvas) no se invalide
+  const handleGameOver = useCallback((finalScore: number) => {
     setStats((s) => ({ ...s, score: finalScore }));
     setPaused(false);
     setOver(true);
-  };
+  }, []);
   // Se quita el foco al pulsar un botón: si no, Espacio lo reactivaría mientras se juega
   const togglePause = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.blur();
