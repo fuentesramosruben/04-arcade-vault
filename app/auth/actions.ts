@@ -1,6 +1,7 @@
 "use server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { isPasswordPwned } from "@/lib/auth/pwned";
 import {
   normalizeUsername,
   validateEmail,
@@ -58,6 +59,14 @@ export async function signUp(
   const passwordError = validatePassword(password);
   if (passwordError) {
     return { status: "error", error: passwordError, field: "password", values };
+  }
+  if (await isPasswordPwned(password)) {
+    return {
+      status: "error",
+      error: "Esa contraseña aparece en filtraciones conocidas. Elige otra.",
+      field: "password",
+      values,
+    };
   }
   const supabase = await createClient();
   try {

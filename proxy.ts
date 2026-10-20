@@ -45,13 +45,29 @@ export async function proxy(request: NextRequest) {
       },
     },
   });
+  let hasSession = false;
   try {
     // No poner lógica entre createServerClient y getClaims: dispara el refresco.
-    await supabase.auth.getClaims();
+    const { data } = await supabase.auth.getClaims();
+    hasSession = Boolean(data?.claims);
   } catch {
     // Si Supabase no responde la petición sigue sin sesión renovada.
+    return response;
   }
-  return response;
+  // Protección de rutas (SPEC 13): /auth/nombre exige sesión y /auth no tiene
+  // sentido con ella. El resto de rutas, incluido jugar, es público (invitado).
+  const { pathname } = request.nextUrl;
+  const target =
+    pathname === "/auth/nombre" && !hasSession
+      ? "/auth"
+      : pathname === "/auth" && hasSession
+        ? "/"
+        : null;
+  if (!target) return response;
+  const redirect = NextResponse.redirect(new URL(target, request.url));
+  // Conserva los tokens renovados por el refresco de sesión.
+  response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+  return redirect;
 }
 export const config = {
   // Todo menos estáticos, optimización de imágenes y archivos con extensión.
