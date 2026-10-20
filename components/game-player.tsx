@@ -374,7 +374,13 @@ export function GamePlayer({ game }: { game: Game }) {
               hasEngine ? (
                 profileName ? (
                   <>
-                    <div className="input-row">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        margin: "22px 0 12px",
+                      }}
+                    >
                       <button
                         className="btn yellow"
                         onClick={handleSave}

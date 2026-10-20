@@ -48,13 +48,18 @@ export function Nav() {
           <span>CRÉDITOS · 03</span>
         </div>
         {user ? (
-          <button
-            className="btn ghost auth-btn"
-            onClick={signOut}
-            title="Cerrar sesión"
-          >
-            {user.name ?? "CUENTA"} ▾
-          </button>
+          <>
+            <span className="user-label" title={user.email ?? undefined}>
+              {user.name ?? "CUENTA"}
+            </span>
+            <button
+              className="btn ghost auth-btn"
+              onClick={signOut}
+              title="Cerrar sesión"
+            >
+              Desconectar
+            </button>
+          </>
         ) : (
           <Link href="/auth" className="btn auth-btn">
             Iniciar Sesión

@@ -1,6 +1,6 @@
 # SPEC 12 — Autenticación: registro, login y sesión con Supabase Auth
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 01, SPEC 04, SPEC 06
 > **Date:** 2026-10-20
 > **Objective:** Sustituir el mock de `/auth` por registro, login (email + contraseña, Google y GitHub) y sesión real con Supabase Auth, con un perfil de nombre arcade único y un ranking que solo acepta puntuaciones de usuarios con sesión.

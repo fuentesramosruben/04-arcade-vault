@@ -326,6 +326,14 @@
     );
     box-shadow: 0 0 8px var(--yellow);
   }
+  .av-nav .user-label {
+    margin-left: 24px;
+    font-family: var(--pixel);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--cyan);
+    white-space: nowrap;
+  }
   .av-nav .auth-btn {
     margin-left: 16px;
   }
@@ -1929,6 +1937,13 @@
       font-size: 9px;
       letter-spacing: 0.08em;
       white-space: nowrap;
+    }
+    .av-nav .user-label {
+      margin-left: 0;
+      font-size: 8px;
+      max-width: 90px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .av-nav .auth-btn {
       margin-left: 0;
