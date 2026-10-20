@@ -1,6 +1,6 @@
 # SPEC 13 — Medidas de seguridad básicas (checklist de seguridad)
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** SPEC 04, SPEC 06, SPEC 12
 > **Date:** 2026-10-20
 > **Objective:** Cerrar los puntos de `references/security/security-checklist.md` (RLS, política de contraseñas, límite de registros, cabeceras de seguridad en Next.js y avisos del advisor de Supabase) y dejar cada uno verificado o, si depende del plan, documentado.
